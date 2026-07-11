@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bookmarks | 唔名为云</title>
+  <meta name="description" content="书签收藏夹">
+  <meta name="color-scheme" content="dark light">
+  <link rel="stylesheet" type="text/css" href="assets/css/main.css"/>
+  <style>
+    .bookmarks { margin: 100px auto 0; max-width: 600px; padding: 0 20px; }
+    @media (max-width: 767px) { .bookmarks { margin-top: 50px; } }
+    .bookmarks h1 { margin-bottom: 10px; }
+    .bookmarks .back { font-size: 14px; margin-bottom: 40px; display: inline-block; }
+    .bookmarks .back a { color: #999; text-decoration: none; border-bottom: 1px dotted #999; }
+    .bookmarks .back a:hover { border-bottom-style: solid; }
+    .bookmarks .section { margin-bottom: 30px; text-align: left; }
+    .bookmarks .section-title { font-size: 13px; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+    .bookmarks .bookmark-list { list-style: none; }
+    .bookmarks .bookmark-list li { margin: 8px 0; }
+    .bookmarks .bookmark-list a { color: #333; text-decoration: none; border-bottom: 1px dotted #ccc; transition: all .3s ease; }
+    .bookmarks .bookmark-list a:hover { border-bottom-style: solid; }
+    .bookmarks .bookmark-list .desc { color: #999; font-size: 13px; margin-left: 8px; }
+    @media (prefers-color-scheme: dark) {
+      .bookmarks .section-title { color: #6C7486; }
+      .bookmarks .bookmark-list a { color: #99A3BA; border-bottom-color: #3F4656; }
+      .bookmarks .bookmark-list a:hover { color: #E4ECFA; border-bottom-color: #99A3BA; }
+      .bookmarks .bookmark-list .desc { color: #6C7486; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bookmarks">
+    <h1>Bookmarks</h1>
+    <span class="back"><a href="/">← Back to Home</a></span>
+
+    <div class="section">
+      <div class="section-title">Tools</div>
+      <ul class="bookmark-list">
+        <li><a href="https://tool.lu/" target="_blank">Tool.lu</a><span class="desc">在线工具箱</span></li>
+        <li><a href="https://www.markdown.com.cn/" target="_blank">Markdown 教程</a><span class="desc">Markdown 中文指南</span></li>
+        <li><a href="https://www.runoob.com/" target="_blank">菜鸟教程</a><span class="desc">编程技术教程</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Download</div>
+      <ul class="bookmark-list">
+        <li><a href="https://www.423down.com/" target="_blank">423Down</a><span class="desc">软件推荐与下载</span></li>
+        <li><a href="https://www.hashspace.cn/" target="_blank">哈希空间</a><span class="desc">资源分享站</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Entertainment</div>
+      <ul class="bookmark-list">
+        <li><a href="https://movie.douban.com/top250" target="_blank">豆瓣 Top250</a><span class="desc">经典电影榜单</span></li>
+        <li><a href="https://space.bilibili.com/110180437" target="_blank">Bilibili</a><span class="desc">我的主页</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Finance</div>
+      <ul class="bookmark-list">
+        <li><a href="https://xueqiu.com/u/54yun" target="_blank">雪球</a><span class="desc">投资社区</span></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
