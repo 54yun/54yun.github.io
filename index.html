@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" class="no-js">
+<html lang="zh">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,112 +7,61 @@
   <meta name="description" content="唔名为云的个人主页">
   <meta name="color-scheme" content="dark light">
 
-  <!-- Open Graph -->
   <meta property="og:title" content="唔名为云">
   <meta property="og:description" content="唔名为云的个人主页">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://54yun.github.io/">
   <meta property="og:image" content="https://54yun.github.io/android-chrome-512x512.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
   <link rel="stylesheet" type="text/css" href="assets/css/main.css"/>
 </head>
 
 <body>
   <div class="vi">
-    <h1 class="animate-slide-in-down">唔名为云</h1>
+    <h1>唔名为云</h1>
     <div class="quote">
-      <span class="quote-line quote-line-start animate-slide-in-left"></span>
-      <span class="quote-icon quote-icon-start animate-slide-in-down">
+      <span class="quote-line quote-line-start"></span>
+      <span class="quote-icon quote-icon-start">
         <i class="icon icon-quotes-left"></i>
       </span>
-      <p class="quote-content animate-slide-in-down">天上有行云, 人在行云里. </p>
-      <p class="quote-author animate-slide-in-down">《生查子·独游雨岩》—— <em>辛弃疾</em></p>
-      <span class="quote-icon quote-icon-end animate-slide-in-up">
+      <p class="quote-content">天上有行云, 人在行云里. </p>
+      <p class="quote-author">《生查子·独游雨岩》—— <em>辛弃疾</em></p>
+      <span class="quote-icon quote-icon-end">
         <i class="icon icon-quotes-right"></i>
       </span>
-      <span class="quote-line quote-line-end animate-slide-in-right"></span>
+      <span class="quote-line quote-line-end"></span>
     </div>
     <div class="links">
-      <a href="https://54yun.cc/" target="_blank" class="animate-slide-in-down">Home</a>
-      <a href="https://www.cnblogs.com/54yun" target="_blank" class="animate-slide-in-down">Blog</a>
-      <a href="https://space.bilibili.com/110180437" target="_blank" class="animate-slide-in-down">BiLiBiLi</a>
-      <a href="https://www.douban.com/feed/people/hi54yun/interests" target="_blank" class="animate-slide-in-down">DouBan</a>
-      <a href="https://xueqiu.com/u/54yun" target="_blank" class="animate-slide-in-down">XueQiu</a>
-      <a href="https://54yun.cc/about" target="_blank" class="animate-slide-in-down">About</a>
+      <a href="https://54yun.cc/" target="_blank" rel="noopener noreferrer">Home</a>
+      <a href="https://www.cnblogs.com/54yun" target="_blank" rel="noopener noreferrer">Blog</a>
+      <a href="https://space.bilibili.com/110180437" target="_blank" rel="noopener noreferrer">BiLiBiLi</a>
+      <a href="https://www.douban.com/feed/people/hi54yun/interests" target="_blank" rel="noopener noreferrer">DouBan</a>
+      <a href="https://xueqiu.com/u/54yun" target="_blank" rel="noopener noreferrer">XueQiu</a>
+      <a href="https://54yun.cc/about" target="_blank" rel="noopener noreferrer">About</a>
     </div>
     <div class="location">
-      <span class="location-icon animate-slide-in-up">
+      <span class="location-icon">
         <i class="icon icon-map-pin"></i>
       </span>
-      <span class="location-text animate-slide-in-down">ShanDong - China</span>
+      <span class="location-text">ShanDong - China</span>
     </div>
     <div class="relocating">Bookmark Page</div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      function animate(el, props, delay) {
-        return new Promise(function (resolve) {
-          setTimeout(function () {
-            Object.assign(el.style, props);
-            el.addEventListener('transitionend', resolve, { once: true });
-          }, delay || 0);
-        });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'b' || e.key === 'B') {
+        document.querySelector('.relocating').style.opacity = 1;
+        setTimeout(function () {
+          window.location.href = '/bookmarks.html';
+        }, 1000);
       }
-
-      function animateAll(selector, props, delay) {
-        var els = document.querySelectorAll(selector);
-        var promises = [];
-        els.forEach(function (el, i) {
-          promises.push(animate(el, props, delay ? delay + i * 50 : 0));
-        });
-        return Promise.all(promises);
-      }
-
-      async function run() {
-        await animateAll('h1', { opacity: 1, top: 0 });
-
-        await Promise.all([
-          animateAll('.quote-line-start', { left: 0 }),
-          animateAll('.quote-line-end', { right: 0 }),
-          animateAll('.quote-icon-start', { opacity: 1, top: 0 }),
-          animateAll('.quote-icon-end', { opacity: 1, bottom: 0 })
-        ]);
-
-        await animateAll('.quote-content', { opacity: 1, top: 0 });
-        await animateAll('.quote-author', { opacity: 1, top: 0 });
-
-        var links = document.querySelectorAll('.links a');
-        var linkPromises = [];
-        links.forEach(function (link, i) {
-          linkPromises.push(animate(link, { opacity: 1, top: 0 }, i * 200));
-        });
-        await Promise.all(linkPromises);
-
-        await Promise.all([
-          animateAll('.location-icon', { opacity: 1, bottom: 0 }),
-          animateAll('.location-text', { opacity: 1, top: 0 })
-        ]);
-      }
-
-      run();
-
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'b' || e.key === 'B') {
-          document.querySelector('.relocating').style.opacity = 1;
-          setTimeout(function () {
-            window.location.href = '/bookmarks.html';
-          }, 1000);
-        }
-      });
     });
   </script>
 </body>
