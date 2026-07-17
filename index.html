@@ -55,13 +55,35 @@
   </div>
 
   <script>
+    const SHORTCUTS = {
+      'b': { url: '/bookmarks.html', label: 'Bookmark Page' },
+      'wx': { url: 'https://filehelper.weixin.qq.com/', label: '微信' },
+    };
+
+    let buffer = '';
+    let timer;
+
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'b' || e.key === 'B') {
-        document.querySelector('.relocating').style.opacity = 1;
-        setTimeout(function () {
-          window.location.href = '/bookmarks.html';
-        }, 1000);
+      const key = e.key.toLowerCase();
+      if (key.length !== 1) return;
+
+      clearTimeout(timer);
+      buffer += key;
+
+      if (SHORTCUTS[buffer]) {
+        const s = SHORTCUTS[buffer];
+        const el = document.querySelector('.relocating');
+        el.textContent = s.label;
+        el.style.opacity = 1;
+        buffer = '';
+        setTimeout(() => { window.location.href = s.url; }, 800);
+        return;
       }
+
+      const isPrefix = Object.keys(SHORTCUTS).some(k => k.startsWith(buffer) && k !== buffer);
+      if (!isPrefix) buffer = '';
+
+      timer = setTimeout(() => { buffer = ''; }, 2000);
     });
   </script>
 </body>
