@@ -21,10 +21,7 @@ ul, ol { list-style: none; }
 /* ================================================= */
 @font-face {
   font-family: 'icomoon';
-  src:
-    url('../fonts/icomoon.ttf?mrs7x8') format('truetype'),
-    url('../fonts/icomoon.woff?mrs7x8') format('woff'),
-    url('../fonts/icomoon.svg?mrs7x8#icomoon') format('svg');
+  src: url('../fonts/icomoon.woff?mrs7x8') format('woff');
   font-weight: normal;
   font-style: normal;
 }
