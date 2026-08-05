@@ -140,12 +140,6 @@ ul, ol { list-style: none; }
   font-size: 13px;
 }
 
-.relocating {
-  opacity: 0;
-  font-size: 13px;
-  transition: all .3s ease;
-}
-
 
 /* LIGHT MODE
 /* ================================================= */
@@ -160,7 +154,6 @@ a { color: #333; }
 .links a { border-bottom-color: #999; }
 .links a:hover { border-bottom-color: #333; }
 .location { color: #666; }
-.relocating { color: #ccc; }
 
 
 /* DARK MODE

@@ -38,12 +38,12 @@
       <span class="quote-line quote-line-end"></span>
     </div>
     <div class="links">
-      <a href="https://54yun.cc/" target="_blank" rel="noopener noreferrer">Home</a>
+      <a href="/">Home</a>
       <a href="https://www.cnblogs.com/54yun" target="_blank" rel="noopener noreferrer">Blog</a>
       <a href="https://space.bilibili.com/110180437" target="_blank" rel="noopener noreferrer">BiLiBiLi</a>
       <a href="https://www.douban.com/feed/people/hi54yun/interests" target="_blank" rel="noopener noreferrer">DouBan</a>
       <a href="https://xueqiu.com/u/54yun" target="_blank" rel="noopener noreferrer">XueQiu</a>
-      <a href="https://54yun.cc/about" target="_blank" rel="noopener noreferrer">About</a>
+      <a href="/about.html">About</a>
     </div>
     <div class="location">
       <span class="location-icon">
@@ -51,39 +51,45 @@
       </span>
       <span class="location-text">ShanDong - China</span>
     </div>
-    <div class="relocating">Bookmark Page</div>
   </div>
 
   <script>
+    // ===== 快捷键配置 =====
+    // 未来新增快捷键:在 SHORTCUTS 中加一行即可,例如 'g': { url: 'https://example.com' }
+    // 多字符键位按顺序连续输入触发(如先按 w 再按 x)。
     const SHORTCUTS = {
-      'b': { url: '/bookmarks.html', label: 'Bookmark Page' },
-      'wx': { url: 'https://filehelper.weixin.qq.com/', label: '微信' },
+      'b': { url: '/bookmarks.html' },                    // 书签页
+      'wx': { url: 'https://filehelper.weixin.qq.com/' }, // 微信文件传输助手
     };
+
+    // 输入缓冲超时(毫秒):连续输入超过此时长仍未命中,则清空缓冲重新开始
+    const BUFFER_RESET_MS = 2000;
 
     let buffer = '';
     let timer;
+    let navigating = false;
 
     document.addEventListener('keydown', function (e) {
+      if (navigating) return; // 已命中快捷键、正在跳转,忽略后续输入
+
       const key = e.key.toLowerCase();
-      if (key.length !== 1) return;
+      if (key.length !== 1) return; // 过滤功能键与 IME 组合输入
 
       clearTimeout(timer);
       buffer += key;
 
       if (SHORTCUTS[buffer]) {
-        const s = SHORTCUTS[buffer];
-        const el = document.querySelector('.relocating');
-        el.textContent = s.label;
-        el.style.opacity = 1;
+        navigating = true;
+        const url = SHORTCUTS[buffer].url;
         buffer = '';
-        setTimeout(() => { window.location.href = s.url; }, 800);
+        window.location.href = url;
         return;
       }
 
       const isPrefix = Object.keys(SHORTCUTS).some(k => k.startsWith(buffer) && k !== buffer);
       if (!isPrefix) buffer = '';
 
-      timer = setTimeout(() => { buffer = ''; }, 2000);
+      timer = setTimeout(() => { buffer = ''; }, BUFFER_RESET_MS);
     });
   </script>
 </body>
