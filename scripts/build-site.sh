@@ -11,19 +11,17 @@ npm run build
 rm -rf dist
 mkdir -p dist
 
-rsync -a \
-  --exclude '.git' \
-  --exclude '.github' \
-  --exclude '.gitignore' \
-  --exclude '.gitattributes' \
-  --exclude 'node_modules' \
-  --exclude 'blog' \
-  --exclude 'blog-src' \
-  --exclude 'dist' \
-  --exclude 'scripts' \
-  --exclude 'package.json' \
-  --exclude 'package-lock.json' \
-  ./ dist/
+# 复制主页文件(纯 bash,兼容无 rsync 的构建环境)
+for entry in ./* ./.??*; do
+  [ -e "$entry" ] || continue
+  case "$entry" in
+    ./.git|./.github|./node_modules|./blog|./blog-src|./dist|./scripts|./.gitignore|./.gitattributes|./AGENTS.md|./reasonix.toml|./package.json|./package-lock.json)
+      ;;
+    *)
+      cp -r "$entry" dist/
+      ;;
+  esac
+done
 
 mkdir -p dist/blog
 cp -r blog/. dist/blog/
