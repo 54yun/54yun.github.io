@@ -1,0 +1,14 @@
+{
+  "name": "54yun-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "暴风城茶馆博客 (VitePress)",
+  "scripts": {
+    "dev": "vitepress dev blog-src",
+    "build": "vitepress build blog-src",
+    "preview": "vitepress preview blog-src"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
