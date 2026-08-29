@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>药房药品查询</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#2f6fed; --primary-d:#1e50b8;
+    --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --accent:#0ea5a4;
+    --shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.04);
+    --shadow-lg:0 8px 24px rgba(16,24,40,.12);
+    --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);
+  }
+  /* ------------- 顶部 ------------- */
+  header{
+    position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
+    padding:12px 20px;box-shadow:var(--shadow);
+  }
+  .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:var(--primary-d)}
+  .brand .logo{
+    width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-size:18px;
+  }
+  .search-box{flex:1;min-width:240px;position:relative}
+  .search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);opacity:.7}
+  #search{
+    width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:10px;
+    font-size:15px;outline:none;transition:.18s;background:#fff;
+  }
+  #search:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+  .top-actions{display:flex;align-items:center;gap:10px}
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:none;border-radius:9px;
+    font-size:14px;cursor:pointer;font-weight:500;transition:.15s;background:#eef2ff;color:var(--primary-d);
+  }
+  .btn:hover{background:#e0e7ff}
+  .btn.primary{background:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-d)}
+  #stat{font-size:13px;color:var(--muted);white-space:nowrap}
+  /* ------------- 筛选条 ------------- */
+  .filters{max-width:1200px;margin:12px auto 0;padding:0 20px 12px;display:flex;gap:10px;flex-wrap:wrap}
+  select{
+    padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;
+    background:#fff;color:var(--text);outline:none;cursor:pointer;max-width:200px;
+  }
+  select:focus{border-color:var(--primary)}
+  .chip{
+    padding:6px 12px;border-radius:999px;font-size:12.5px;cursor:pointer;border:1.5px solid var(--border);
+    background:#fff;color:var(--muted);transition:.15s;user-select:none;
+  }
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+  /* ------------- 卡片区 ------------- */
+  main{max-width:1200px;margin:0 auto;padding:20px}
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px;box-shadow:var(--shadow);transition:.18s;display:flex;flex-direction:column;gap:10px;
+    position:relative;overflow:hidden;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:#c7d4f5}
+  .card .name{font-size:15.5px;font-weight:700;color:var(--text);line-height:1.4;padding-right:8px}
+  .card .pin{margin-left:6px;font-size:11.5px;color:var(--muted);font-weight:400}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{
+    font-size:11.5px;padding:3px 9px;border-radius:999px;background:#f1f5f9;color:#475569;
+    border:1px solid #e2e8f0;
+  }
+  .tag.zy{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
+  .tag.xiaolei{background:#eef2ff;color:#4338ca;border-color:#c7d2fe}
+  .tag.jixing{background:#ecfeff;color:#0e7490;border-color:#a5f3fc}
+  .card .meta{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+  .card .meta .row{display:flex;gap:6px;align-items:flex-start;line-height:1.5}
+  .card .meta .row .k{color:var(--muted);min-width:34px;flex-shrink:0;font-weight:500}
+  .card .meta .row .v{color:var(--text);word-break:break-all}
+  .card .stock{
+    margin-top:auto;display:flex;align-items:center;justify-content:space-between;
+    padding-top:10px;border-top:1px dashed var(--border);font-size:13px;
+  }
+  .stock .num{font-weight:700;color:var(--primary-d);font-size:16px}
+  .empty{
+    text-align:center;color:var(--muted);padding:60px 20px;font-size:15px;
+  }
+  /* ------------- 初次导入覆盖层 ------------- */
+  #overlay{
+    position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  #overlay.hidden{display:none}
+  .import-box{
+    background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);
+    max-width:520px;width:100%;padding:36px;text-align:center;
+  }
+  .import-box .ico{font-size:46px;margin-bottom:12px}
+  .import-box h2{font-size:20px;margin-bottom:8px;color:var(--primary-d)}
+  .import-box p{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.6}
+  .dropzone{
+    border:2px dashed var(--border);border-radius:12px;padding:28px;margin-bottom:16px;
+    color:var(--muted);font-size:14px;transition:.2s;cursor:pointer;
+  }
+  .dropzone.drag{border-color:var(--primary);background:#f0f5ff;color:var(--primary-d)}
+  #file{display:none}
+  .step-hint{font-size:12.5px;color:var(--muted);margin-top:14px}
+  .bar{height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:14px;display:none}
+  .bar>div{height:100%;width:0;background:var(--primary);transition:width .15s}
+  #overlay.success .import-box .msg{color:#16a34a}
+  a{color:var(--primary)}
+  /* ------------ 扫码弹窗 ------------ */
+  .modal{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.6);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+  .modal-box{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);max-width:560px;width:100%;overflow:hidden}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700;color:var(--primary-d)}
+  .cam-wrap{position:relative;background:#0f172a;aspect-ratio:4/3}
+  #cam{width:100%;height:100%;object-fit:cover;display:block}
+  .scan-msg{position:absolute;left:0;right:0;bottom:0;text-align:center;padding:6px;background:rgba(0,0,0,.5);color:#fff;font-size:13px}
+  .scan-msg.err{color:#fca5a5}
+  .scan-tip{padding:12px 18px;font-size:12.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border)}
+  .scan-frame{position:absolute;inset:12%;border:2px solid #22d3ee;border-radius:10px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
+  @media(max-width:600px){
+    .brand{font-size:17px}
+    main{padding:14px}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 初次导入覆盖层 ============ -->
+<div id="overlay">
+  <div class="import-box">
+    <div class="ico">💊</div>
+    <h2>药房药品查询</h2>
+    <p>首次使用请先导入数据文件 <b>drugdata.json</b>，导入后会自动保存，下次打开无需重复导入。</p>
+    <div class="dropzone" id="dropzone">
+      <div>📁 点击选择 或 将 <b>drugdata.json</b> 拖拽到此处</div>
+      <div style="margin-top:8px;font-size:12.5px;color:#94a3b8">（也可输入文件路径后回车导入）</div>
+    </div>
+    <input type="file" id="file" accept=".json,application/json">
+    <button class="btn primary" id="btnImport" style="width:100%;justify-content:center;padding:12px">导入数据</button>
+    <div class="step-hint" id="hint" style="display:none">
+      正在处理中，请稍候…
+      <div class="bar"><div id="pbar"></div></div>
+    </div>
+    <p class="msg" style="margin-top:14px;font-size:14px;color:var(--muted)"></p>
+  </div>
+</div>
+
+<!-- ============ 主界面 ============ -->
+<header>
+  <div class="header-inner">
+    <div class="brand"><span class="logo">💊</span>药房药品查询</div>
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" placeholder="搜索药名 / 拼音 / 规格 / 厂家 / 分类 / 追溯码…" autocomplete="off">
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="btnScan" title="摄像头扫码识别药品追溯码">📷 扫码</button>
+      <button class="btn" id="btnReload" title="重新导入数据">↻ 重新导入</button>
+      <span id="stat"></span>
+    </div>
+  </div>
+  <div class="filters" id="filters">
+    <select id="filterGui"><option value="">药品归类：全部</option></select>
+    <select id="filterJixing"><option value="">药品剂型：全部</option></select>
+    <select id="filterFenlei"><option value="">所属分类：全部</option></select>
+    <button class="chip" id="chipStock" title="只看库存大于0">有库存</button>
+    <button class="chip" id="chipReset">重置</button>
+  </div>
+</header>
+
+<main>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" style="display:none">没有符合条件的药品</div>
+  <div style="text-align:center;margin:24px 0">
+    <button class="btn" id="btnMore" style="display:none;padding:12px 32px">加载更多</button>
+  </div>
+</main>
+
+<!-- ============ 扫码弹窗 ============ -->
+<div id="scanModal" class="modal" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>📷 扫码识别药品追溯码</span>
+      <button class="btn" id="btnScanClose">✕ 关闭</button>
+    </div>
+    <div class="cam-wrap">
+      <video id="cam" playsinline muted></video>
+      <div class="scan-frame"></div>
+      <div id="scanMsg" class="scan-msg">正在启动摄像头…</div>
+    </div>
+    <p class="scan-tip">将药品包装上的 <b>追溯码 / 条码</b> 对准摄像头取景框，识别后自动跳转搜索。<br>
+    若当前环境不支持摄像头扫码，可直接在搜索框<b>手动输入追溯码</b>（前 7 位匹配药品标识码）。</p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const DB_NAME="drugDb",STORE="drugs";
+const FIELDS=["ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","库存量","单位","存放位置","存储条件","批准文号"];
+
+let rawData=[];
+let filtered=[];
+let state={q:"",gui:"",jx:"",fl:"",stock:false};
+let appReady=false;
+
+/* ------------- 持久化：IndexedDB 为主 + localStorage 回退 ------------- */
+const LS_KEY="drugData_v1";
+let _idb=null;
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(_idb)return res(_idb);
+    try{
+      const r=indexedDB.open(DB_NAME,1);
+      r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:"ypmc"});};
+      r.onsuccess=e=>{_idb=e.target.result;res(_idb)};
+      r.onerror=e=>{rej(e.target.error)};
+    }catch(e){rej(e)}
+  });
+}
+function idbSave(list){
+  return new Promise((res,rej)=>{
+    let db;let settled=false;
+    const finish=(fn,v)=>{if(!settled){settled=true;clearTimeout(tm);fn(v)}};
+    const tm=setTimeout(()=>finish(rej,new Error("保存超时")),8000);
+    openDB().then(d=>{
+      db=d;
+      // 清空
+      let tx=db.transaction(STORE,"readwrite");
+      tx.objectStore(STORE).clear();
+      tx.oncomplete=()=>{
+        // 写入全部
+        let tx2=db.transaction(STORE,"readwrite"),st=tx2.objectStore(STORE);
+        for(let i=0;i<list.length;i++)st.put(list[i]);
+        tx2.oncomplete=()=>finish(res);
+        tx2.onerror=tx2.onabort=e=>finish(rej,
+          e.target&&e.target.error?e.target.error:new Error("写入失败"));
+      };
+      tx.onerror=tx.onabort=e=>finish(rej,
+        e.target&&e.target.error?e.target.error:new Error("清空失败"));
+    }).catch(e=>finish(rej,e));
+  });
+}
+async function saveDB(list){
+  try{ await idbSave(list); return "indexeddb"; }
+  catch(e){
+    localStorage.setItem(LS_KEY,JSON.stringify(list));
+    return "localStorage";
+  }
+}
+async function loadDB(){
+  try{
+    const n=await idbLoad();
+    if(n&&n.length)return n;
+  }catch(e){}
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw)return JSON.parse(raw);
+  }catch(e){}
+  return [];
+}
+function idbLoad(){
+  return new Promise((res,rej)=>{
+    let settled=false;
+    const finish=(fn,v)=>{if(!settled){settled=true;clearTimeout(tm);fn(v)}};
+    const tm=setTimeout(()=>finish(rej,new Error("读取超时")),8000);
+    openDB().then(db=>{
+      const tx=db.transaction(STORE,"readonly");
+      const req=tx.objectStore(STORE).getAll();
+      req.onsuccess=()=>finish(res,req.result||[]);
+      req.onerror=()=>finish(rej,req.error);
+    }).catch(e=>finish(rej,e));
+  });
+}
+
+/* ---------------- 初始化 ---------------- */
+async function init(){
+  try{
+    const stored=await loadDB();
+    if(appReady)return;                 // 用户已手动导入过，不再干预
+    if(stored.length>0){
+      rawData=stored;
+      showApp();
+    }else{
+      document.getElementById("overlay").classList.remove("hidden");
+    }
+  }catch(e){ if(!appReady) showOverlay(); }
+}
+
+function showOverlay(){$("overlay").classList.remove("hidden")}
+function hideOverlay(){$("overlay").classList.add("hidden")}
+function showApp(){ appReady=true; hideOverlay(); populateFilters(); applyFilter(); updateStat(); }
+const $=id=>document.getElementById(id);
+
+/* ---------------- 导入 ---------------- */
+async function importData(text){
+  const list=JSON.parse(text);
+  if(!Array.isArray(list))throw new Error("数据格式错误：应为 JSON 数组");
+  msg("正在保存数据…","");
+  await saveDB(list);
+  rawData=list;
+  showApp();
+}
+function msg(t,cls){const m=$("overlay").querySelector(".msg");m.textContent=t;m.style.color=cls==="ok"?"#16a34a":(cls==="err"?"#dc2626":"#6b7280")}
+function handleFile(f){
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=async ev=>{ try{ await importData(ev.target.result);}catch(err){ msg("❌ 导入失败："+err.message,"err") } };
+  r.readAsText(f,"utf-8");
+}
+$("btnImport").addEventListener("click",e=>{msg("","");$("file").click()});
+$("file").addEventListener("change",e=>{handleFile(e.target.files[0]);e.target.value=""});
+const dz=$("dropzone");
+dz.addEventListener("click",e=>{msg("","");$("file").click()});
+["dragover","dragenter"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));
+["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));
+dz.addEventListener("drop",e=>{e.preventDefault();handleFile(e.dataTransfer.files[0])});
+$("btnReload").addEventListener("click",()=>showOverlay());
+
+/* ---------------- 筛选条件 ---------------- */
+function uniq(arr){return [...new Set(arr.filter(v=>v))].sort((a,b)=>a.localeCompare(b,"zh"))}
+function populateFilters(){
+  const gui=uniq(rawData.map(x=>x["药品归类"]));
+  const jx=uniq(rawData.map(x=>x["药品剂型"]));
+  const fl=uniq(rawData.map(x=>x["所属分类"]));
+  fillSelect("filterGui",gui);fillSelect("filterJixing",jx);fillSelect("filterFenlei",fl);
+}
+function fillSelect(id,arr){
+  const sel=$(id),cur=sel.value;
+  const placeholder=sel.querySelector('option[value=""]');
+  for(let i=sel.options.length-1;i>=0;i--){if(sel.options[i].value!=="")sel.remove(i);}
+  arr.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});
+  if(cur&&arr.includes(cur))sel.value=cur;else if(placeholder)sel.value="";
+}
+
+const PAGE=400;
+let visible=0;
+
+/* ---------------- 渲染 ---------------- */
+function render(list){
+  const g=$("grid");g.innerHTML="";
+  $("empty").style.display=list.length?"none":"block";
+  const frag=document.createDocumentFragment();
+  list.slice(0,visible).forEach(d=>frag.appendChild(card(d)));
+  g.appendChild(frag);
+  const more=$("btnMore");
+  more.style.display=visible<list.length?"inline-flex":"none";
+  requestAnimationFrame(updateStat);
+}
+function card(d){
+  const el=document.createElement("div");el.className="card";
+  const gui=d["药品归类"];
+  const guiTag=gui==="中成药"?`<span class="tag zy">${esc(gui)}</span>`:`<span class="tag">${esc(gui)}</span>`;
+  const stock=Number.isFinite(d["库存量"])?d["库存量"]:0;
+  const hasStock=stock>0;
+  el.innerHTML=`
+    <div class="name">${esc(d.ypmc)||"—"}<span class="pin">${esc(d["拼音"])||""}</span></div>
+    <div class="tags">
+      ${guiTag}
+      ${d["药品剂型"]?`<span class="tag jixing">${esc(d["药品剂型"])}</span>`:""}
+      ${d["所属分类"]?`<span class="tag xiaolei">${esc(d["所属分类"])}</span>`:""}
+      ${hasStock?`<span class="tag zy">有库存</span>`:""}
+    </div>
+    <div class="meta">
+      ${d.ypgg?row("规格",d.ypgg):""}
+      ${d.cjmc?row("厂家",d.cjmc):""}
+      ${d.单位?row("单位",d.单位):""}
+      ${d["存放位置"]?row("位置",d["存放位置"]):""}
+      ${d["存储条件"]?row("存储",d["存储条件"]):""}
+      ${d["批准文号"]?row("批文",d["批准文号"]):""}
+      ${d["zsbsm"]?row("追溯码",d["zsbsm"]):""}
+    </div>
+    <div class="stock">
+      <span>库存量</span><span class="num">${Number.isFinite(stock)?stock:0}</span>
+    </div>`;
+  return el;
+}
+function row(k,v){return `<div class="row"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+/* ---------------- 搜索与过滤 ---------------- */
+function applyFilter(){
+  const q=state.q.trim().toLowerCase();
+  let list=rawData;
+  if(q){
+    // 纯数字/截断数字：支持追溯码匹配（zsbsm 为追溯码前7位标识码）
+    const qDigits=q.replace(/[^0-9]/g,"");
+    if(qDigits){
+      list=list.filter(d=>{
+        const z=(d.zsbsm||"").replace(/[^0-9]/g,"");
+        if(!z)return false;
+        // 完整追溯码(如20位) → 匹配前7位；或直接搜7位标识码
+        return z===qDigits.slice(0,z.length) || z.startsWith(qDigits) || qDigits.startsWith(z);
+      });
+    }else{
+      list=list.filter(d=>{
+        const hay=[d.ypmc,d["拼音"],d.ypgg,d.cjmc,d["药品归类"],d["药品剂型"],d["所属分类"]].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+    }
+  }
+  if(state.gui)list=list.filter(d=>d["药品归类"]===state.gui);
+  if(state.jx)list=list.filter(d=>d["药品剂型"]===state.jx);
+  if(state.fl)list=list.filter(d=>d["所属分类"]===state.fl);
+  if(state.stock)list=list.filter(d=>Number(d["库存量"])>0);
+  filtered=list;
+  visible=Math.min(PAGE,list.length);
+  render(list);
+}
+function updateStat(){
+  $("stat").textContent=`共 ${rawData.length} 条 · 显示 ${Math.min(visible,filtered.length)}/${filtered.length}`;
+}
+$("btnMore").addEventListener("click",()=>{
+  const per=Math.max(400,Math.min(2000,filtered.length-visible));
+  visible+=per;
+  render(filtered);
+});
+$("search").addEventListener("input",e=>{state.q=e.target.value;applyFilter()});
+$("filterGui").addEventListener("change",e=>{state.gui=e.target.value;applyFilter()});
+$("filterJixing").addEventListener("change",e=>{state.jx=e.target.value;applyFilter()});
+$("filterFenlei").addEventListener("change",e=>{state.fl=e.target.value;applyFilter()});
+const chipStock=$("chipStock");
+chipStock.addEventListener("click",()=>{state.stock=!state.stock;chipStock.classList.toggle("active",state.stock);applyFilter()});
+$("chipReset").addEventListener("click",()=>{
+  state={q:"",gui:"",jx:"",fl:"",stock:false};
+  $("search").value="";$("filterGui").value="";$("filterJixing").value="";$("filterFenlei").value="";
+  chipStock.classList.remove("active");applyFilter();
+});
+
+/* ---------------- 扫码 ---------------- */
+let camStream=null,detector=null,scanTimer=null,scanning=false;
+const scanModal=$("scanModal"),cam=$("cam"),scanMsg=$("scanMsg");
+
+function setScanMsg(t,err){scanMsg.textContent=t;scanMsg.classList.toggle("err",!!err)}
+async function setupDetector(){
+  if("BarcodeDetector" in window){
+    try{
+      if(!detector)detector=new BarcodeDetector({formats:["ean_13","ean_8","code_128","code_39","qr_code","upc_a","upc_e","itf"]});
+      return true;
+    }catch(e){detector=null;return false;}
+  }
+  return false;
+}
+async function startCamera(){
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
+    cam.srcObject=camStream;
+    await cam.play();
+    const ok=await setupDetector();
+    if(ok){setScanMsg("正在识别… 请将条码对准取景框");startScanLoop();}
+    else{setScanMsg("当前浏览器不支持自动识别，请手动输入追溯码","err");}
+  }catch(e){
+    setScanMsg("无法访问摄像头："+(e&&e.message?e.message:"权限被拒绝")+"。请手动输入追溯码。","err");
+  }
+}
+function stopCamera(){
+  clearTimeout(scanTimer);scanning=false;
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  cam.srcObject=null;
+}
+function startScanLoop(){
+  scanning=true;
+  async function tick(){
+    if(!scanning)return;
+    if(detector&&cam.readyState===4){
+      try{
+        const codes=await detector.detect(cam);
+        if(codes&&codes.length>0){
+          const code=codes[0].rawValue||"";
+          const digits=String(code).replace(/[^0-9]/g,"");
+          if(digits.length>=7){
+            stopCamera();
+            closeScan();
+            $("search").value=code;
+            state.q=code;applyFilter();
+            window.scrollTo({top:0,behavior:"smooth"});
+            return;
+          }
+        }
+      }catch(e){}
+    }
+    scanTimer=setTimeout(tick,150);
+  }
+  tick();
+}
+function openScan(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    setScanMsg("当前环境不支持摄像头（需 HTTPS 或 localhost）","err");
+    scanModal.style.display="flex";return;
+  }
+  scanModal.style.display="flex";
+  setScanMsg("正在启动摄像头…");
+  startCamera();
+}
+function closeScan(){stopCamera();scanModal.style.display="none"}
+$("btnScan").addEventListener("click",openScan);
+$("btnScanClose").addEventListener("click",closeScan);
+scanModal.addEventListener("click",e=>{if(e.target===scanModal)closeScan()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&scanModal.style.display==="flex")closeScan()});
+
+/* ---------------- 启动 ---------------- */
+init();
+</script>
+</body>
+</html>
