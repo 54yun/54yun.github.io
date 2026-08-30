@@ -31,12 +31,18 @@
     background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-size:18px;
   }
   .search-box{flex:1;min-width:240px;position:relative}
-  .search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);opacity:.7}
+  .search-box .s-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);opacity:.7;pointer-events:none}
   #search{
-    width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:10px;
+    width:100%;padding:11px 40px 11px 40px;border:1.5px solid var(--border);border-radius:10px;
     font-size:15px;outline:none;transition:.18s;background:#fff;
   }
   #search:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+  .scan-in-btn{
+    position:absolute;right:5px;top:50%;transform:translateY(-50%);
+    width:32px;height:32px;border:none;border-radius:8px;background:#eef2ff;color:var(--primary-d);
+    font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .scan-in-btn:hover{background:var(--primary);color:#fff}
   .top-actions{display:flex;align-items:center;gap:10px}
   .btn{
     display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:none;border-radius:9px;
@@ -104,11 +110,12 @@
   .import-box .ico{font-size:46px;margin-bottom:12px}
   .import-box h2{font-size:20px;margin-bottom:8px;color:var(--primary-d)}
   .import-box p{color:var(--muted);font-size:14px;margin-bottom:20px;line-height:1.6}
-  .dropzone{
-    border:2px dashed var(--border);border-radius:12px;padding:28px;margin-bottom:16px;
-    color:var(--muted);font-size:14px;transition:.2s;cursor:pointer;
+  #dataUrl{
+    width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;
+    font-size:14px;outline:none;transition:.18s;background:#fff;color:var(--text);text-align:left;
   }
-  .dropzone.drag{border-color:var(--primary);background:#f0f5ff;color:var(--primary-d)}
+  #dataUrl:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+  .import-box a{color:var(--primary);text-decoration:underline;cursor:pointer}
   #file{display:none}
   .step-hint{font-size:12.5px;color:var(--muted);margin-top:14px}
   .bar{height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:14px;display:none}
@@ -139,18 +146,21 @@
   <div class="import-box">
     <div class="ico">💊</div>
     <h2>药房药品查询</h2>
-    <p>首次使用请先导入数据文件 <b>drugdata.json</b>，导入后会自动保存，下次打开无需重复导入。</p>
-    <div class="dropzone" id="dropzone">
-      <div>📁 点击选择 或 将 <b>drugdata.json</b> 拖拽到此处</div>
-      <div style="margin-top:8px;font-size:12.5px;color:#94a3b8">（也可输入文件路径后回车导入）</div>
+    <p>首次使用请通过<b>数据链接</b>导入，导入后会自动保存，下次打开无需重复导入。</p>
+    <div id="urlRow">
+      <input id="dataUrl" type="url" placeholder="请输入数据链接，如 http://192.168.1.100/drugdata.json" autocomplete="off">
+      <button class="btn primary" id="btnImport" style="width:100%;justify-content:center;padding:12px;margin-top:10px">获取并导入</button>
     </div>
-    <input type="file" id="file" accept=".json,application/json">
-    <button class="btn primary" id="btnImport" style="width:100%;justify-content:center;padding:12px">导入数据</button>
     <div class="step-hint" id="hint" style="display:none">
-      正在处理中，请稍候…
+      正在获取数据，请稍候…
       <div class="bar"><div id="pbar"></div></div>
     </div>
     <p class="msg" style="margin-top:14px;font-size:14px;color:var(--muted)"></p>
+    <div class="step-hint" style="margin-top:10px">
+      链接需可公开访问（本机 / 局域网 / 服务器均可）。若链接无法访问，可点
+      <a href="#" id="btnLocal" style="color:var(--primary)">选择本地文件</a> 代替。
+      <input type="file" id="file" accept=".json,application/json" style="display:none">
+    </div>
   </div>
 </div>
 
@@ -159,16 +169,17 @@
   <div class="header-inner">
     <div class="brand"><span class="logo">💊</span>药房药品查询</div>
     <div class="search-box">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <svg class="s-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input id="search" placeholder="搜索药名 / 拼音 / 规格 / 厂家 / 分类 / 追溯码…" autocomplete="off">
+      <button id="btnScan" class="scan-in-btn" title="摄像头扫码识别药品追溯码">📷</button>
     </div>
     <div class="top-actions">
-      <button class="btn primary" id="btnScan" title="摄像头扫码识别药品追溯码">📷 扫码</button>
-      <button class="btn" id="btnReload" title="重新导入数据">↻ 重新导入</button>
+      <button class="btn" id="btnFilterToggle" title="展开/收起筛选">⚙ 筛选</button>
+      <button class="btn" id="btnReload" title="重新导入数据">↻</button>
       <span id="stat"></span>
     </div>
   </div>
-  <div class="filters" id="filters">
+  <div class="filters" id="filters" hidden>
     <select id="filterGui"><option value="">药品归类：全部</option></select>
     <select id="filterJixing"><option value="">药品剂型：全部</option></select>
     <select id="filterFenlei"><option value="">所属分类：全部</option></select>
@@ -316,13 +327,22 @@ function handleFile(f){
   r.onload=async ev=>{ try{ await importData(ev.target.result);}catch(err){ msg("❌ 导入失败："+err.message,"err") } };
   r.readAsText(f,"utf-8");
 }
-$("btnImport").addEventListener("click",e=>{msg("","");$("file").click()});
+async function importFromUrl(url){
+  if(!url){ msg("⚠️ 请输入数据链接","err"); return; }
+  msg("正在获取数据…","");
+  let res;
+  try{ res=await fetch(url,{cache:"no-store"}); }
+  catch(err){ msg("❌ 无法访问该链接（可能被浏览器跨域拦截，或链接不可达）","err"); return; }
+  if(!res.ok){ msg("❌ 请求失败：HTTP "+res.status,"err"); return; }
+  const text=await res.text();
+  msg("正在保存数据…","");
+  try{ await importData(text); }
+  catch(err){ msg("❌ 导入失败："+err.message,"err"); }
+}
+$("btnImport").addEventListener("click",()=>{ msg("",""); const u=$("dataUrl").value.trim(); importFromUrl(u); });
+$("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"){ msg("",""); importFromUrl(e.target.value.trim()); } });
+$("btnLocal").addEventListener("click",e=>{ e.preventDefault(); msg("",""); $("file").click(); });
 $("file").addEventListener("change",e=>{handleFile(e.target.files[0]);e.target.value=""});
-const dz=$("dropzone");
-dz.addEventListener("click",e=>{msg("","");$("file").click()});
-["dragover","dragenter"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag")}));
-["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag")}));
-dz.addEventListener("drop",e=>{e.preventDefault();handleFile(e.dataTransfer.files[0])});
 $("btnReload").addEventListener("click",()=>showOverlay());
 
 /* ---------------- 筛选条件 ---------------- */
@@ -433,6 +453,13 @@ $("chipReset").addEventListener("click",()=>{
   state={q:"",gui:"",jx:"",fl:"",stock:false};
   $("search").value="";$("filterGui").value="";$("filterJixing").value="";$("filterFenlei").value="";
   chipStock.classList.remove("active");applyFilter();
+});
+/* 筛选折叠切换 */
+const filtersEl=$("filters"),btnFilterToggle=$("btnFilterToggle");
+btnFilterToggle.addEventListener("click",()=>{
+  const open=filtersEl.hidden;
+  filtersEl.hidden=!open;
+  btnFilterToggle.classList.toggle("active",open);
 });
 
 /* ---------------- 扫码 ---------------- */
