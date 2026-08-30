@@ -25,11 +25,6 @@
     padding:12px 20px;box-shadow:var(--shadow);
   }
   .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-  .brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:var(--primary-d)}
-  .brand .logo{
-    width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
-    background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;font-size:18px;
-  }
   .search-box{flex:1;min-width:240px;position:relative}
   .search-box .s-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);opacity:.7;pointer-events:none}
   #search{
@@ -44,10 +39,35 @@
   }
   .scan-in-btn:hover{background:var(--primary);color:#fff}
   .top-actions{display:flex;align-items:center;gap:10px}
+  .dropdown{position:relative}
   .btn{
     display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:none;border-radius:9px;
     font-size:14px;cursor:pointer;font-weight:500;transition:.15s;background:#eef2ff;color:var(--primary-d);
   }
+  .btn:hover{background:#e0e7ff}
+  .btn.primary{background:var(--primary);color:#fff}
+  .btn.primary:hover{background:var(--primary-d)}
+  .btn.more{
+    padding:8px 12px;background:#fff;color:var(--text);
+    border:1px solid var(--border);border-radius:9px;
+  }
+  .btn.more:hover{border-color:#c7d4f5;background:#f4f6fb;color:var(--primary-d)}
+  .menu{
+    position:absolute;right:0;top:calc(100% + 8px);min-width:220px;padding:6px;
+    background:#fff;border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 12px 32px rgba(15,23,42,.15);z-index:60;
+  }
+  .menu-item{
+    display:flex;width:100%;align-items:center;gap:10px;padding:9px 10px;border:none;border-radius:9px;
+    background:none;font-size:13.5px;cursor:pointer;text-align:left;color:var(--text);transition:.12s;
+  }
+  .menu-item:hover{background:#f4f6fb}
+  .menu-item .ico{
+    width:28px;height:28px;flex-shrink:0;display:grid;place-items:center;border-radius:8px;
+    background:#eef2ff;color:var(--primary-d);font-size:14px;
+  }
+  .menu-item .txt{display:flex;flex-direction:column;line-height:1.35;min-width:0}
+  .menu-item .sub{font-size:11.5px;color:var(--muted)}
   .btn:hover{background:#e0e7ff}
   .btn.primary{background:var(--primary);color:#fff}
   .btn.primary:hover{background:var(--primary-d)}
@@ -73,15 +93,11 @@
   .tag.zy{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
   .tag.xiaolei{background:#eef2ff;color:#4338ca;border-color:#c7d2fe}
   .tag.jixing{background:#ecfeff;color:#0e7490;border-color:#a5f3fc}
+  .tag.kh{background:#fff7ed;color:#b45309;border-color:#fcd34d;font-weight:700}
   .card .meta{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
   .card .meta .row{display:flex;gap:6px;align-items:flex-start;line-height:1.5}
   .card .meta .row .k{color:var(--muted);min-width:34px;flex-shrink:0;font-weight:500}
   .card .meta .row .v{color:var(--text);word-break:break-all}
-  .card .stock{
-    margin-top:auto;display:flex;align-items:center;justify-content:space-between;
-    padding-top:10px;border-top:1px dashed var(--border);font-size:13px;
-  }
-  .stock .num{font-weight:700;color:var(--primary-d);font-size:16px}
   .empty{
     text-align:center;color:var(--muted);padding:60px 20px;font-size:15px;
   }
@@ -123,9 +139,24 @@
   #h5q{position:absolute;inset:0;background:#0f172a}
   #h5q video{width:100%;height:100%;object-fit:cover}
   @media(max-width:600px){
-    .brand{font-size:17px}
-    main{padding:14px}
-    .grid{grid-template-columns:1fr}
+    header{padding:10px 12px}
+    .header-inner{gap:10px}
+    .search-box{flex:0 0 100%;min-width:0}
+    #search{font-size:16px;padding-left:38px}
+    .scan-in-btn{width:38px;height:38px;right:6px;font-size:18px}
+    .top-actions{flex:1 0 100%;justify-content:space-between}
+    .btn.more{font-size:13px;padding:9px 12px}
+    #stat{font-size:11.5px;white-space:normal;text-align:right;line-height:1.4}
+    .menu{min-width:200px}
+    .menu-item{padding:12px 10px}
+    main{padding:12px}
+    .grid{gap:10px;grid-template-columns:1fr}
+    .card{padding:14px}
+    .import-box{padding:26px 18px}
+    #dataUrl{font-size:16px}
+    .modal{padding:10px}
+    .modal-head{padding:12px 14px}
+    .scan-tip{padding:10px 14px}
   }
 </style>
 </head>
@@ -148,8 +179,9 @@
     <p class="msg" style="margin-top:14px;font-size:14px;color:var(--muted)"></p>
     <div class="step-hint" style="margin-top:10px">
       链接需可公开访问（本机 / 局域网 / 服务器均可）。若链接无法访问，可点
-      <a href="#" id="btnLocal" style="color:var(--primary)">选择本地文件</a> 代替。
-      <input type="file" id="file" accept=".json,application/json" style="display:none">
+      <a href="#" id="btnLocal" style="color:var(--primary)">选择本地文件</a>（.csv / .json）代替。<br>
+      用 Excel 编辑数据后请<b>另存为 CSV（UTF-8 逗号分隔）</b>再导入；若中文乱码，程序会自动按 GBK 解码。
+      <input type="file" id="file" accept=".csv,.json,text/csv,application/json" style="display:none">
     </div>
   </div>
 </div>
@@ -157,14 +189,21 @@
 <!-- ============ 主界面 ============ -->
 <header>
   <div class="header-inner">
-    <div class="brand"><span class="logo">💊</span>药房药品查询</div>
     <div class="search-box">
       <svg class="s-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input id="search" placeholder="搜索药名 / 拼音 / 规格 / 厂家 / 分类 / 追溯码…" autocomplete="off">
+      <input id="search" placeholder="搜索药名 / 拼音 / 规格 / 厂家 / 分类 / 库位 / 追溯码…（空格分隔多条件）" autocomplete="off">
       <button id="btnScan" class="scan-in-btn" title="摄像头扫码识别药品追溯码">📷</button>
     </div>
     <div class="top-actions">
-      <button class="btn" id="btnReload" title="重新导入数据">↻</button>
+      <div class="dropdown">
+        <button class="btn more" id="btnMenu" title="更多操作">更多 ▾</button>
+        <div class="menu" id="menu" style="display:none">
+          <button class="menu-item" id="btnReload">
+            <span class="ico">💊</span>
+            <span class="txt">重新导入数据<span class="sub">更换或更新 CSV / JSON 数据源</span></span>
+          </button>
+        </div>
+      </div>
       <span id="stat"></span>
     </div>
   </div>
@@ -198,8 +237,8 @@
 
 <script>
 "use strict";
-const DB_NAME="drugDb",STORE="drugs";
-const FIELDS=["ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","库存量","单位","存放位置","存储条件","批准文号"];
+const DB_NAME="drugDb2",STORE="drugs";
+const FIELDS=["ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","存放位置","存储条件","批准文号"];
 
 let rawData=[];
 let filtered=[];
@@ -207,14 +246,14 @@ let state={q:""};
 let appReady=false;
 
 /* ------------- 持久化：IndexedDB 为主 + localStorage 回退 ------------- */
-const LS_KEY="drugData_v1";
+const LS_KEY="drugData_v2";
 let _idb=null;
 function openDB(){
   return new Promise((res,rej)=>{
     if(_idb)return res(_idb);
     try{
       const r=indexedDB.open(DB_NAME,1);
-      r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:"ypmc"});};
+      r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:"idm"});};
       r.onsuccess=e=>{_idb=e.target.result;res(_idb)};
       r.onerror=e=>{rej(e.target.error)};
     }catch(e){rej(e)}
@@ -295,19 +334,88 @@ function showApp(){ appReady=true; hideOverlay(); applyFilter(); updateStat(); }
 const $=id=>document.getElementById(id);
 
 /* ---------------- 导入 ---------------- */
-async function importData(text){
-  const list=JSON.parse(text);
-  if(!Array.isArray(list))throw new Error("数据格式错误：应为 JSON 数组");
+const CSV_COLS=["idm","ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","存放位置","存储条件","批准文号","zsbsm"];
+async function applyData(list){
+  if(!list||!list.length)throw new Error("数据为空");
+  const seen=new Set();let seq=1;
+  for(const d of list){
+    let k=d["idm"];
+    if(k==null||k==="")k=String(seq++);
+    else{k=String(k).trim();if(seen.has(k))k=String(seq++);}
+    d["idm"]=k;seen.add(k);
+  }
   msg("正在保存数据…","");
   await saveDB(list);
   rawData=list;
   showApp();
 }
+async function importData(text){
+  const list=JSON.parse(text);
+  if(!Array.isArray(list))throw new Error("数据格式错误：应为 JSON 数组");
+  await applyData(list);
+}
 function msg(t,cls){const m=$("overlay").querySelector(".msg");m.textContent=t;m.style.color=cls==="ok"?"#16a34a":(cls==="err"?"#dc2626":"#6b7280")}
+function decodeText(buf){
+  const u8=new Uint8Array(buf);
+  try{return new TextDecoder("utf-8",{fatal:true}).decode(u8);}
+  catch(e){return new TextDecoder("gbk").decode(u8);}
+}
+function parseCsv(text){
+  const rows=[];let field="",row=[],inQuotes=false;let i=0,n=text.length;
+  while(i<n){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='"'&&text[i+1]==='"'){field+='"';i+=2;}
+      else if(c==='"'){inQuotes=false;i++;}
+      else{field+=c;i++;}
+    }else{
+      if(c==='"'){inQuotes=true;i++;}
+      else if(c===','){row.push(field);field="";i++;}
+      else if(c==='\n'){row.push(field);rows.push(row);row=[];field="";i++;}
+      else if(c==='\r'){if(text[i+1]==='\n')i++;row.push(field);rows.push(row);row=[];field="";i++;}
+      else{field+=c;i++;}
+    }
+  }
+  if(field!==""||row.length){row.push(field);rows.push(row);}
+  return rows;
+}
+function csvToDrugs(rows){
+  if(!rows||!rows.length)throw new Error("CSV 为空");
+  const hdr=rows[0].map(h=>String(h==null?"":h).trim());
+  const idx={};CSV_COLS.forEach(c=>{idx[c]=hdr.indexOf(c)});
+  const list=[];
+  for(let i=1;i<rows.length;i++){
+    const r=rows[i];
+    if(!r||r.length===1&&String(r[0]||"").trim()==="")continue;
+    const d={};
+    CSV_COLS.forEach(c=>{
+      const j=idx[c];
+      d[c]=(j>=0&&j<r.length&&r[j]!=null)?String(r[j]).trim():"";
+    });
+    if(!d.ypmc)continue;
+    list.push(d);
+  }
+  if(!list.length)throw new Error("未解析到任何药品数据");
+  return list;
+}
+function importCsv(buf){
+  msg("正在解析 CSV…","");
+  try{ return applyData(csvToDrugs(parseCsv(decodeText(buf)))); }
+  catch(err){ msg("❌ 导入失败："+err.message,"err"); }
+}
 function handleFile(f){
   if(!f)return;
+  const name=(f.name||"").toLowerCase();
+  if(name.endsWith(".csv")){
+    const r=new FileReader();
+    r.onload=async ev=>{ try{ await importCsv(ev.target.result);}catch(err){ msg("❌ 导入失败："+err.message,"err"); } };
+    r.onerror=()=>msg("❌ 文件读取失败","err");
+    r.readAsArrayBuffer(f);
+    return;
+  }
   const r=new FileReader();
-  r.onload=async ev=>{ try{ await importData(ev.target.result);}catch(err){ msg("❌ 导入失败："+err.message,"err") } };
+  r.onload=async ev=>{ try{ await importData(ev.target.result);}catch(err){ msg("❌ 导入失败："+err.message,"err"); } };
+  r.onerror=()=>msg("❌ 文件读取失败","err");
   r.readAsText(f,"utf-8");
 }
 async function importFromUrl(url){
@@ -326,7 +434,21 @@ $("btnImport").addEventListener("click",()=>{ msg("",""); const u=$("dataUrl").v
 $("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"){ msg("",""); importFromUrl(e.target.value.trim()); } });
 $("btnLocal").addEventListener("click",e=>{ e.preventDefault(); msg("",""); $("file").click(); });
 $("file").addEventListener("change",e=>{handleFile(e.target.files[0]);e.target.value=""});
-$("btnReload").addEventListener("click",()=>showOverlay());
+
+/* ---------------- 更多下拉菜单 ---------------- */
+const menu=$("menu");
+function setMenu(open){menu.style.display=open?"block":"none"}
+$("btnMenu").addEventListener("click",e=>{
+  e.stopPropagation();
+  setMenu(menu.style.display!=="block");
+});
+document.addEventListener("click",e=>{
+  if(menu.style.display==="block"&&!e.target.closest(".dropdown"))setMenu(false);
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&menu.style.display==="block")setMenu(false);
+});
+$("btnReload").addEventListener("click",()=>{setMenu(false);showOverlay();});
 
 const PAGE=400;
 let visible=0;
@@ -346,27 +468,21 @@ function card(d){
   const el=document.createElement("div");el.className="card";
   const gui=d["药品归类"];
   const guiTag=gui==="中成药"?`<span class="tag zy">${esc(gui)}</span>`:`<span class="tag">${esc(gui)}</span>`;
-  const stock=Number.isFinite(d["库存量"])?d["库存量"]:0;
-  const hasStock=stock>0;
+  const loc=(d["存放位置"]||"").trim();
   el.innerHTML=`
     <div class="name">${esc(d.ypmc)||"—"}<span class="pin">${esc(d["拼音"])||""}</span></div>
     <div class="tags">
+      ${loc?`<span class="tag kh">📍 ${esc(loc)}</span>`:""}
       ${guiTag}
       ${d["药品剂型"]?`<span class="tag jixing">${esc(d["药品剂型"])}</span>`:""}
       ${d["所属分类"]?`<span class="tag xiaolei">${esc(d["所属分类"])}</span>`:""}
-      ${hasStock?`<span class="tag zy">有库存</span>`:""}
     </div>
     <div class="meta">
       ${d.ypgg?row("规格",d.ypgg):""}
       ${d.cjmc?row("厂家",d.cjmc):""}
-      ${d.单位?row("单位",d.单位):""}
-      ${d["存放位置"]?row("位置",d["存放位置"]):""}
       ${d["存储条件"]?row("存储",d["存储条件"]):""}
       ${d["批准文号"]?row("批文",d["批准文号"]):""}
       ${d["zsbsm"]?row("追溯码",d["zsbsm"]):""}
-    </div>
-    <div class="stock">
-      <span>库存量</span><span class="num">${Number.isFinite(stock)?stock:0}</span>
     </div>`;
   return el;
 }
@@ -374,23 +490,31 @@ function row(k,v){return `<div class="row"><span class="k">${k}</span><span clas
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
 /* ---------------- 搜索与过滤 ---------------- */
+function textHay(d){
+  return [d.ypmc,d["拼音"],d.ypgg,d.cjmc,d["药品归类"],d["药品剂型"],d["所属分类"],d["存放位置"]].join(" ").toLowerCase();
+}
+function matchTrace(d,td){
+  const z=(d.zsbsm||"").replace(/[^0-9]/g,"");
+  if(!z)return false;
+  return z===td.slice(0,z.length) || z.startsWith(td) || td.startsWith(z);
+}
+function tokenMatch(d,t,hay){
+  const digits=t.replace(/[^0-9]/g,"");
+  if(digits.length>=7)return matchTrace(d,digits)||hay.includes(t);
+  return hay.includes(t);
+}
 function applyFilter(){
   const q=state.q.trim().toLowerCase();
   let list=rawData;
   if(q){
-    // 纯数字/截断数字：支持追溯码匹配（zsbsm 为追溯码前7位标识码）
-    const qDigits=q.replace(/[^0-9]/g,"");
-    if(qDigits){
-      list=list.filter(d=>{
-        const z=(d.zsbsm||"").replace(/[^0-9]/g,"");
-        if(!z)return false;
-        // 完整追溯码(如20位) → 匹配前7位；或直接搜7位标识码
-        return z===qDigits.slice(0,z.length) || z.startsWith(qDigits) || qDigits.startsWith(z);
-      });
+    const tokens=q.split(/\s+/);
+    // 单个纯数字 token：保持原有追溯码匹配
+    if(tokens.length===1 && /^[0-9]+$/.test(tokens[0])){
+      list=list.filter(d=>matchTrace(d,tokens[0]));
     }else{
       list=list.filter(d=>{
-        const hay=[d.ypmc,d["拼音"],d.ypgg,d.cjmc,d["药品归类"],d["药品剂型"],d["所属分类"]].join(" ").toLowerCase();
-        return hay.includes(q);
+        const hay=textHay(d);
+        return tokens.every(t=>tokenMatch(d,t,hay));
       });
     }
   }
