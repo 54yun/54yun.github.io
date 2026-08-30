@@ -52,18 +52,6 @@
   .btn.primary{background:var(--primary);color:#fff}
   .btn.primary:hover{background:var(--primary-d)}
   #stat{font-size:13px;color:var(--muted);white-space:nowrap}
-  /* ------------- 筛选条 ------------- */
-  .filters{max-width:1200px;margin:12px auto 0;padding:0 20px 12px;display:flex;gap:10px;flex-wrap:wrap}
-  select{
-    padding:8px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;
-    background:#fff;color:var(--text);outline:none;cursor:pointer;max-width:200px;
-  }
-  select:focus{border-color:var(--primary)}
-  .chip{
-    padding:6px 12px;border-radius:999px;font-size:12.5px;cursor:pointer;border:1.5px solid var(--border);
-    background:#fff;color:var(--muted);transition:.15s;user-select:none;
-  }
-  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
   /* ------------- 卡片区 ------------- */
   main{max-width:1200px;margin:0 auto;padding:20px}
   .grid{
@@ -132,6 +120,8 @@
   .scan-msg.err{color:#fca5a5}
   .scan-tip{padding:12px 18px;font-size:12.5px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border)}
   .scan-frame{position:absolute;inset:12%;border:2px solid #22d3ee;border-radius:10px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
+  #h5q{position:absolute;inset:0;background:#0f172a}
+  #h5q video{width:100%;height:100%;object-fit:cover}
   @media(max-width:600px){
     .brand{font-size:17px}
     main{padding:14px}
@@ -174,17 +164,9 @@
       <button id="btnScan" class="scan-in-btn" title="摄像头扫码识别药品追溯码">📷</button>
     </div>
     <div class="top-actions">
-      <button class="btn" id="btnFilterToggle" title="展开/收起筛选">⚙ 筛选</button>
       <button class="btn" id="btnReload" title="重新导入数据">↻</button>
       <span id="stat"></span>
     </div>
-  </div>
-  <div class="filters" id="filters" hidden>
-    <select id="filterGui"><option value="">药品归类：全部</option></select>
-    <select id="filterJixing"><option value="">药品剂型：全部</option></select>
-    <select id="filterFenlei"><option value="">所属分类：全部</option></select>
-    <button class="chip" id="chipStock" title="只看库存大于0">有库存</button>
-    <button class="chip" id="chipReset">重置</button>
   </div>
 </header>
 
@@ -205,6 +187,7 @@
     </div>
     <div class="cam-wrap">
       <video id="cam" playsinline muted></video>
+      <div id="h5q" style="display:none"></div>
       <div class="scan-frame"></div>
       <div id="scanMsg" class="scan-msg">正在启动摄像头…</div>
     </div>
@@ -220,7 +203,7 @@ const FIELDS=["ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类",
 
 let rawData=[];
 let filtered=[];
-let state={q:"",gui:"",jx:"",fl:"",stock:false};
+let state={q:""};
 let appReady=false;
 
 /* ------------- 持久化：IndexedDB 为主 + localStorage 回退 ------------- */
@@ -308,7 +291,7 @@ async function init(){
 
 function showOverlay(){$("overlay").classList.remove("hidden")}
 function hideOverlay(){$("overlay").classList.add("hidden")}
-function showApp(){ appReady=true; hideOverlay(); populateFilters(); applyFilter(); updateStat(); }
+function showApp(){ appReady=true; hideOverlay(); applyFilter(); updateStat(); }
 const $=id=>document.getElementById(id);
 
 /* ---------------- 导入 ---------------- */
@@ -344,22 +327,6 @@ $("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"){ msg("",""); im
 $("btnLocal").addEventListener("click",e=>{ e.preventDefault(); msg("",""); $("file").click(); });
 $("file").addEventListener("change",e=>{handleFile(e.target.files[0]);e.target.value=""});
 $("btnReload").addEventListener("click",()=>showOverlay());
-
-/* ---------------- 筛选条件 ---------------- */
-function uniq(arr){return [...new Set(arr.filter(v=>v))].sort((a,b)=>a.localeCompare(b,"zh"))}
-function populateFilters(){
-  const gui=uniq(rawData.map(x=>x["药品归类"]));
-  const jx=uniq(rawData.map(x=>x["药品剂型"]));
-  const fl=uniq(rawData.map(x=>x["所属分类"]));
-  fillSelect("filterGui",gui);fillSelect("filterJixing",jx);fillSelect("filterFenlei",fl);
-}
-function fillSelect(id,arr){
-  const sel=$(id),cur=sel.value;
-  const placeholder=sel.querySelector('option[value=""]');
-  for(let i=sel.options.length-1;i>=0;i--){if(sel.options[i].value!=="")sel.remove(i);}
-  arr.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o)});
-  if(cur&&arr.includes(cur))sel.value=cur;else if(placeholder)sel.value="";
-}
 
 const PAGE=400;
 let visible=0;
@@ -427,10 +394,6 @@ function applyFilter(){
       });
     }
   }
-  if(state.gui)list=list.filter(d=>d["药品归类"]===state.gui);
-  if(state.jx)list=list.filter(d=>d["药品剂型"]===state.jx);
-  if(state.fl)list=list.filter(d=>d["所属分类"]===state.fl);
-  if(state.stock)list=list.filter(d=>Number(d["库存量"])>0);
   filtered=list;
   visible=Math.min(PAGE,list.length);
   render(list);
@@ -444,79 +407,136 @@ $("btnMore").addEventListener("click",()=>{
   render(filtered);
 });
 $("search").addEventListener("input",e=>{state.q=e.target.value;applyFilter()});
-$("filterGui").addEventListener("change",e=>{state.gui=e.target.value;applyFilter()});
-$("filterJixing").addEventListener("change",e=>{state.jx=e.target.value;applyFilter()});
-$("filterFenlei").addEventListener("change",e=>{state.fl=e.target.value;applyFilter()});
-const chipStock=$("chipStock");
-chipStock.addEventListener("click",()=>{state.stock=!state.stock;chipStock.classList.toggle("active",state.stock);applyFilter()});
-$("chipReset").addEventListener("click",()=>{
-  state={q:"",gui:"",jx:"",fl:"",stock:false};
-  $("search").value="";$("filterGui").value="";$("filterJixing").value="";$("filterFenlei").value="";
-  chipStock.classList.remove("active");applyFilter();
-});
-/* 筛选折叠切换 */
-const filtersEl=$("filters"),btnFilterToggle=$("btnFilterToggle");
-btnFilterToggle.addEventListener("click",()=>{
-  const open=filtersEl.hidden;
-  filtersEl.hidden=!open;
-  btnFilterToggle.classList.toggle("active",open);
-});
 
 /* ---------------- 扫码 ---------------- */
-let camStream=null,detector=null,scanTimer=null,scanning=false;
+const H5Q_URL="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js";
+const BARCODE_FORMATS=["ean_13","ean_8","code_128","code_39","upc_a","upc_e","itf","qr_code"];
+const NATIVE_TIMEOUT=6000;
+let camStream=null,detector=null,scanTimer=null,failTimer=null,scanning=false;
+let h5q=null,h5qSwitching=false;
 const scanModal=$("scanModal"),cam=$("cam"),scanMsg=$("scanMsg");
 
 function setScanMsg(t,err){scanMsg.textContent=t;scanMsg.classList.toggle("err",!!err)}
-async function setupDetector(){
-  if("BarcodeDetector" in window){
-    try{
-      if(!detector)detector=new BarcodeDetector({formats:["ean_13","ean_8","code_128","code_39","qr_code","upc_a","upc_e","itf"]});
-      return true;
-    }catch(e){detector=null;return false;}
-  }
-  return false;
-}
-async function startCamera(){
+function setupDetector(){
+  if(!("BarcodeDetector" in window))return false;
   try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
-    cam.srcObject=camStream;
-    await cam.play();
-    const ok=await setupDetector();
-    if(ok){setScanMsg("正在识别… 请将条码对准取景框");startScanLoop();}
-    else{setScanMsg("当前浏览器不支持自动识别，请手动输入追溯码","err");}
-  }catch(e){
-    setScanMsg("无法访问摄像头："+(e&&e.message?e.message:"权限被拒绝")+"。请手动输入追溯码。","err");
-  }
+    if(!detector)detector=new BarcodeDetector({formats:BARCODE_FORMATS});
+    return !!detector;
+  }catch(e){detector=null;return false}
 }
-function stopCamera(){
-  clearTimeout(scanTimer);scanning=false;
+async function stopH5Q(){
+  if(h5q){
+    const q=h5q;h5q=null;
+    try{await q.stop();}catch(e){}
+    try{q.clear();}catch(e){}
+  }
+  const c=$("h5q");c.style.display="none";c.innerHTML="";
+  cam.style.display="";
+}
+function stopNativeStream(){
   if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
   cam.srcObject=null;
 }
-function startScanLoop(){
-  scanning=true;
-  async function tick(){
+function stopCamera(){
+  scanning=false;
+  clearTimeout(scanTimer);scanTimer=null;
+  clearTimeout(failTimer);failTimer=null;
+  stopNativeStream();
+  stopH5Q();
+}
+function loadH5Q(){
+  return new Promise((res,rej)=>{
+    if(window.Html5Qrcode)return res(window.Html5Qrcode);
+    const s=document.createElement("script");
+    s.src=H5Q_URL;
+    s.onload=()=>res(window.Html5Qrcode);
+    s.onerror=()=>{s.remove();rej(new Error("CDN 加载失败"))};
+    document.head.appendChild(s);
+  });
+}
+function handleScan(raw){
+  const code=String(raw==null?"":raw);
+  const digits=code.replace(/[^0-9]/g,"");
+  if(digits.length<7)return false;
+  stopCamera();
+  closeScan();
+  $("search").value=code;
+  state.q=code;applyFilter();
+  window.scrollTo({top:0,behavior:"smooth"});
+  return true;
+}
+function switchToH5Q(){
+  if(h5qSwitching||h5q)return;
+  h5qSwitching=true;
+  stopNativeStream();
+  clearTimeout(scanTimer);clearTimeout(failTimer);
+  setScanMsg("正在加载识别引擎…");
+  loadH5Q().then(H5Q=>{
+    h5qSwitching=false;
     if(!scanning)return;
-    if(detector&&cam.readyState===4){
-      try{
-        const codes=await detector.detect(cam);
-        if(codes&&codes.length>0){
-          const code=codes[0].rawValue||"";
-          const digits=String(code).replace(/[^0-9]/g,"");
-          if(digits.length>=7){
-            stopCamera();
-            closeScan();
-            $("search").value=code;
-            state.q=code;applyFilter();
-            window.scrollTo({top:0,behavior:"smooth"});
-            return;
-          }
-        }
-      }catch(e){}
-    }
-    scanTimer=setTimeout(tick,150);
+    return startH5Q(H5Q);
+  }).catch(e=>{
+    h5qSwitching=false;
+    console.error("html5-qrcode 加载失败",e);
+    if(scanning){setScanMsg("识别引擎加载失败（需联网），请手动输入追溯码","err");scanning=false;}
+  });
+}
+async function startH5Q(H5Q){
+  stopNativeStream();
+  const c=$("h5q");
+  c.style.display="block";
+  cam.style.display="none";
+  setScanMsg("正在启动摄像头…");
+  const S=window.Html5QrcodeSupportedFormats;
+  const fmts=[S.QR_CODE,S.EAN_13,S.EAN_8,S.CODE_128,S.CODE_39,S.UPC_A,S.UPC_E,S.ITF];
+  h5q=new H5Q("h5q");
+  try{
+    await h5q.start(
+      {facingMode:"environment"},
+      {fps:15,qrbox:{width:250,height:130},aspectRatio:4/3,formatsToSupport:fmts},
+      code=>{if(code!==null&&code!==undefined)handleScan(code)}
+    );
+    h5qSwitching=false;
+    if(!scanning){stopH5Q();return;}
+    setScanMsg("正在识别… 请将条码对准取景框");
+  }catch(e){
+    h5qSwitching=false;
+    console.error("html5-qrcode 启动失败",e);
+    stopH5Q();
+    if(scanning)setScanMsg("无法访问摄像头，请手动输入追溯码","err");
   }
-  tick();
+}
+async function startNative(){
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});
+    if(!scanning)return stopNativeStream();
+    cam.srcObject=camStream;
+    await cam.play();
+    if(!setupDetector()){setScanMsg("切换识别引擎…");switchToH5Q();return;}
+    setScanMsg("正在识别… 请将条码对准取景框");
+    scanning=true;
+    failTimer=setTimeout(()=>{
+      if(scanning&&!h5q&&!h5qSwitching){setScanMsg("切换识别引擎…");switchToH5Q();}
+    },NATIVE_TIMEOUT);
+    async function tick(){
+      if(!scanning||h5qSwitching||h5q)return;
+      try{
+        if(cam.readyState===4){
+          const codes=await detector.detect(cam);
+          if(!scanning||h5q||h5qSwitching)return;
+          if(codes&&codes.length>0&&handleScan(codes[0].rawValue||""))return;
+        }
+      }catch(e){
+        console.warn("BarcodeDetector 检测异常，切换引擎",e);
+        switchToH5Q();
+        return;
+      }
+      scanTimer=setTimeout(tick,150);
+    }
+    tick();
+  }catch(e){
+    if(scanning)setScanMsg("无法访问摄像头："+(e&&e.message?e.message:"权限被拒绝")+"。请手动输入追溯码。","err");
+  }
 }
 function openScan(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
@@ -524,10 +544,16 @@ function openScan(){
     scanModal.style.display="flex";return;
   }
   scanModal.style.display="flex";
+  scanning=true;
   setScanMsg("正在启动摄像头…");
-  startCamera();
+  startNative();
 }
-function closeScan(){stopCamera();scanModal.style.display="none"}
+function closeScan(){
+  stopCamera();
+  scanModal.style.display="none";
+  const c=$("h5q");c.style.display="none";c.innerHTML="";
+  cam.style.display="";
+}
 $("btnScan").addEventListener("click",openScan);
 $("btnScanClose").addEventListener("click",closeScan);
 scanModal.addEventListener("click",e=>{if(e.target===scanModal)closeScan()});
