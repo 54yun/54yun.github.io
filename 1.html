@@ -96,6 +96,8 @@
   .tag.jixing{background:#ecfeff;color:#0e7490;border-color:#a5f3fc}
   .tag.kh{background:#ea580c;color:#fff;border-color:#ea580c;font-weight:700;padding:4px 11px;box-shadow:0 1px 3px rgba(234,88,12,.4)}
   .card .meta{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+  .card .meta .stock{font-size:13px;color:var(--text);background:#f4f6fb;border:1px solid #e2e8f0;border-radius:8px;padding:6px 10px}
+  .card .meta .stock b{color:var(--primary-d);font-size:15px;font-weight:800}
   .card .meta .row{display:flex;gap:6px;align-items:flex-start;line-height:1.5}
   .card .meta .row .k{color:var(--muted);min-width:34px;flex-shrink:0;font-weight:500}
   .card .meta .row .v{color:var(--text);word-break:break-all}
@@ -275,7 +277,7 @@
 
 <script>
 "use strict";
-const DB_NAME="drugDb2",STORE="drugs";
+const DB_NAME="drugDb3",STORE="drugs";
 const FIELDS=["ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","存放位置","存储条件","批准文号"];
 
 let rawData=[];
@@ -284,7 +286,7 @@ let state={q:""};
 let appReady=false;
 
 /* ------------- 持久化：IndexedDB 为主 + localStorage 回退 ------------- */
-const LS_KEY="drugData_v2";
+const LS_KEY="drugData_v3";
 let _idb=null;
 function openDB(){
   return new Promise((res,rej)=>{
@@ -372,7 +374,7 @@ function showApp(){ appReady=true; hideOverlay(); applyFilter(); updateStat(); }
 const $=id=>document.getElementById(id);
 
 /* ---------------- 导入 ---------------- */
-const CSV_COLS=["idm","ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","存放位置","存储条件","批准文号","zsbsm"];
+const CSV_COLS=["idm","ypmc","ypgg","cjmc","药品归类","药品剂型","所属分类","拼音","存放位置","存储条件","批准文号","zsbsm","库存量"];
 async function applyData(list){
   if(!list||!list.length)throw new Error("数据为空");
   const seen=new Set();let seq=1;
@@ -539,6 +541,7 @@ function card(d){
       ${d["所属分类"]?`<span class="tag xiaolei">${esc(d["所属分类"])}</span>`:""}
     </div>
     <div class="meta">
+      ${d["库存量"]!=null&&String(d["库存量"]).trim()!==""?`<div class="stock">📦 库存：<b>${esc(d["库存量"])}</b></div>`:""}
       ${d.ypgg?row("规格",d.ypgg):""}
       ${d.cjmc?row("厂家",d.cjmc):""}
       ${d["存储条件"]?row("存储",d["存储条件"]):""}
@@ -571,23 +574,20 @@ const FORM_OPTIONS=["","丸剂","乳膏剂","其他","冻干粉针剂","凝胶�
 const CATEGORY_OPTIONS=["","β-内酰胺类抗生素(头孢/青霉素/碳青霉烯)","中枢兴奋药/促智药(脑功能改善)","中药/中成药","产科/安胎用药","作用于末梢血管/脑血管的药物","促胃肠动力药","免疫抑制剂","其他/未分类","利尿药/脱水药","助消化药","医用气体","医用耗材/器械","升压药/拟肾上腺素药","升白细胞/血小板药","单抗及免疫抗肿瘤药","口腔科用药","喹诺酮类抗菌药","大环内酯及其他抗生素","妇科用药","导泻/通便药","局部麻醉药","平喘药","性激素及生殖/抗前列腺用药","抗凝血药","抗寄生虫药(驱虫/抗原虫)","抗帕金森病药","抗心律失常药/强心苷","抗心绞痛/血管扩张药(硝酸酯类等)","抗抑郁药","抗病毒药","抗痛风药","抗癫痫药/抗惊厥","抗真菌药","抗精神病药","抗结核药","抗肿瘤内分泌/激素治疗药","抗肿瘤药(化疗药)","抗血小板药","抗贫血药(补铁/VitB12/叶酸)","抗过敏药(抗组胺药)","抗酸药及抗溃疡药","抗风湿/改善病情药(DMARDs)","抗骨质疏松药/钙调节药","抗高血压药","止吐药","止泻/肠道微生态调节药","止血药","氨基糖苷类抗生素","消毒防腐药","溶栓药","甲状腺激素及抗甲状腺药","电解质/酸碱平衡调节药","皮肤科用药(外用)","眼科用药","磺胺类及其他抗菌药","神经肌肉阻滞/肌松药","糖类/能量及营养药","维生素及矿物质制剂","耳鼻喉科用药","肝胆疾病辅助用药","肾上腺皮质激素类","胰岛素及类似物","血液制品/血浆代用品","解毒药/吸附药","解热镇痛抗炎药(NSAIDs)","解痉药/抗胆碱药","调血脂药","造影剂/诊断用药","镇咳祛痰药","镇静催眠药/抗焦虑药","降血糖药","靶向抗肿瘤药(小分子激酶抑制剂)","麻醉药(全麻/麻醉辅助)"].sort();
 const STORAGE_OPTIONS=["","常温储存","阴凉储存(不超过20℃)","冷藏(2~8℃)","冷冻(-20℃以下)","避光储存","密封防潮","遮光密闭","置于干燥处"].sort();
 const DROPDOWN_FIELDS={"药品归类":CLASS_OPTIONS,"药品剂型":FORM_OPTIONS,"所属分类":CATEGORY_OPTIONS,"存储条件":STORAGE_OPTIONS};
-const EDIT_FIELDS=[["药品归类","药品归类（下拉选择）"],["药品剂型","药品剂型（下拉选择）"],["所属分类","所属分类（下拉选择）"],["拼音","拼音（搜索用）"],["存放位置","存放位置 / 库位"],["存储条件","存储条件（下拉选择）"],["批准文号","批准文号"],["zsbsm","追溯码"]];
+const EDIT_FIELDS=[["存放位置","存放位置 / 库位"],["存储条件","存储条件（下拉选择）"],["zsbsm","追溯码"],["库存量","库存数量"]];
 
 function validateField(k,v){
   const val=String(v==null?"":v).trim();
   switch(k){
-    case "药品归类": case "药品剂型": case "所属分类": case "存储条件":
+    case "存储条件":
       if(!val)return "请选择"; 
-      const opts=DROPDOWN_FIELDS[k];
-      return opts.includes(val)?"":"不在规范取值内";
-    case "拼音":
-      return /^[a-zA-Z\s]+$/.test(val)?"":"拼音只能为英文字母和空格";
+      return STORAGE_OPTIONS.includes(val)?"":"不在规范取值内";
     case "存放位置":
       return /^[A-Za-z0-9\-_/ ]*$/.test(val)?"":"库位只能用字母、数字、横杠、下划线和斜杠";
-    case "批准文号":
-      return val===""||/^(国药准字|国药健字|国食健字|国械注准|国械备|国药典字)[A-Z0-9]+$/.test(val)?"":"批准文号格式不正确（如：国药准字H20123456）";
     case "zsbsm":
       return val===""||/^[0-9]{7,30}$/.test(val)?"":"追溯码需为7位以上纯数字";
+    case "库存量":
+      return val===""||/^\d+$/.test(val)?"":"库存数量需为非负整数";
     default: return "";
   }
 }
@@ -627,12 +627,11 @@ function DOControl(k,val){
   const inp=document.createElement("input");
   inp.dataset.field=k;
   inp.value=val;
-  if(k==="拼音")inp.placeholder="如：amxljn";
-  else if(k==="存放位置")inp.placeholder="如：A-01 / 冷藏柜";
-  else if(k==="批准文号")inp.placeholder="如：国药准字H20123456";
+  if(k==="库存量"){inp.type="number";inp.min="0";inp.inputMode="numeric";}
+  else if(k==="存放位置")inp.placeholder="如：A-01";
   else if(k==="zsbsm")inp.placeholder="追溯码（7位以上数字）";
-  if(k==="拼音"||k==="存放位置"){
-    inp.addEventListener("input",()=>{inp.value=inp.value.replace(/[^\w\s/-]/g,"");});
+  if(k==="存放位置"){
+    inp.addEventListener("input",()=>{inp.value=inp.value.replace(/[^A-Za-z0-9\-_/ ]/g,"");});
   }
   return inp;
 }
@@ -677,7 +676,7 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;",
 
 /* ---------------- 搜索与过滤 ---------------- */
 function textHay(d){
-  return [d.ypmc,d["拼音"],d.ypgg,d.cjmc,d["药品归类"],d["药品剂型"],d["所属分类"],d["存放位置"]].join(" ").toLowerCase();
+  return [d.ypmc,d["拼音"],d.ypgg,d.cjmc,d["药品归类"],d["药品剂型"],d["所属分类"],d["存放位置"],d["库存量"]].join(" ").toLowerCase();
 }
 function matchTrace(d,td){
   const z=(d.zsbsm||"").replace(/[^0-9]/g,"");
