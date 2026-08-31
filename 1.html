@@ -83,6 +83,7 @@
     position:relative;overflow:hidden;
   }
   .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:#c7d4f5}
+  .card:active{transform:none}
   .card .name{font-size:15.5px;font-weight:700;color:var(--text);line-height:1.4;padding-right:8px}
   .card .pin{margin-left:6px;font-size:11.5px;color:var(--muted);font-weight:400}
   .card .tags{display:flex;flex-wrap:wrap;gap:6px}
@@ -93,7 +94,7 @@
   .tag.zy{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
   .tag.xiaolei{background:#eef2ff;color:#4338ca;border-color:#c7d2fe}
   .tag.jixing{background:#ecfeff;color:#0e7490;border-color:#a5f3fc}
-  .tag.kh{background:#fff7ed;color:#b45309;border-color:#fcd34d;font-weight:700}
+  .tag.kh{background:#ea580c;color:#fff;border-color:#ea580c;font-weight:700;padding:4px 11px;box-shadow:0 1px 3px rgba(234,88,12,.4)}
   .card .meta{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
   .card .meta .row{display:flex;gap:6px;align-items:flex-start;line-height:1.5}
   .card .meta .row .k{color:var(--muted);min-width:34px;flex-shrink:0;font-weight:500}
@@ -138,6 +139,20 @@
   .scan-frame{position:absolute;inset:12%;border:2px solid #22d3ee;border-radius:10px;pointer-events:none;box-shadow:0 0 0 2000px rgba(0,0,0,.35)}
   #h5q{position:absolute;inset:0;background:#0f172a}
   #h5q video{width:100%;height:100%;object-fit:cover}
+  /* ------------- 编辑弹窗 ------------- */
+  .edit-box{max-width:560px}
+  .edit-title{font-size:16px;font-weight:700;color:var(--text);padding:16px 18px 2px}
+  .edit-sub{font-size:12.5px;color:var(--muted);padding:0 18px 14px}
+  .edit-fields{max-height:52vh;overflow-y:auto;padding:0 18px;display:flex;flex-direction:column;gap:11px}
+  .edit-fields .ef{display:flex;flex-direction:column;gap:5px}
+  .edit-fields .ef .efk{font-size:12.5px;color:var(--muted);font-weight:600}
+  .edit-fields input,.edit-fields select{
+    width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:9px;
+    font-size:14px;outline:none;transition:.18s;background:#fff;color:var(--text);
+  }
+  .edit-fields input:focus,.edit-fields select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+  .edit-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px 18px;border-top:1px solid var(--border)}
+  .card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   @media(max-width:600px){
     header{padding:10px 12px}
     .header-inner{gap:10px}
@@ -202,6 +217,10 @@
             <span class="ico">💊</span>
             <span class="txt">重新导入数据<span class="sub">更换或更新 CSV / JSON 数据源</span></span>
           </button>
+          <button class="menu-item" id="btnExport">
+            <span class="ico">⬇️</span>
+            <span class="txt">导出数据<span class="sub">导出全部数据（CSV，可用 Excel 编辑）</span></span>
+          </button>
         </div>
       </div>
       <span id="stat"></span>
@@ -232,6 +251,23 @@
     </div>
     <p class="scan-tip">将药品包装上的 <b>追溯码 / 条码</b> 对准摄像头取景框，识别后自动跳转搜索。<br>
     若当前环境不支持摄像头扫码，可直接在搜索框<b>手动输入追溯码</b>（前 7 位匹配药品标识码）。</p>
+  </div>
+</div>
+
+<!-- ============ 编辑弹窗 ============ -->
+<div id="editModal" class="modal" style="display:none">
+  <div class="modal-box edit-box">
+    <div class="modal-head">
+      <span>✏️ 编辑药品信息</span>
+      <button class="btn" id="btnEditClose">✕ 关闭</button>
+    </div>
+    <div class="edit-title" id="editTitle"></div>
+    <div class="edit-sub" id="editSub"></div>
+    <div class="edit-fields" id="editFields"></div>
+    <div class="edit-actions">
+      <button class="btn" id="btnEditCancel">取消</button>
+      <button class="btn primary" id="btnEditSave">💾 保存</button>
+    </div>
   </div>
 </div>
 
@@ -447,8 +483,31 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&menu.style.display==="block")setMenu(false);
+  if(e.key==="Escape"&&editModal.style.display==="flex")closeEdit();
 });
 $("btnReload").addEventListener("click",()=>{setMenu(false);showOverlay();});
+$("btnExport").addEventListener("click",()=>{setMenu(false);exportCsv();});
+
+/* ---------------- 导出 CSV ---------------- */
+function csvCell(v){
+  const s=String(v==null?"":v);
+  return /[",\n\r]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;
+}
+function exportCsv(){
+  if(!rawData.length){alert("暂无可导出的数据");return;}
+  const rows=[CSV_COLS.slice()];
+  rawData.forEach(d=>{
+    rows.push(CSV_COLS.map(c=>csvCell(d[c])));
+  });
+  const csvText="\uFEFF"+rows.map(r=>r.join(",")).join("\r\n");
+  const blob=new Blob([csvText],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const d=new Date(),pad=n=>String(n).padStart(2,"0");
+  a.href=url;a.download=`药房数据_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.csv`;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 
 const PAGE=400;
 let visible=0;
@@ -484,8 +543,73 @@ function card(d){
       ${d["批准文号"]?row("批文",d["批准文号"]):""}
       ${d["zsbsm"]?row("追溯码",d["zsbsm"]):""}
     </div>`;
+  bindLongPress(el,d);
   return el;
 }
+function bindLongPress(el,d){
+  let t=null,sx=0,sy=0,started=false;
+  const cancel=()=>{clearTimeout(t);t=null;started=false;};
+  el.addEventListener("pointerdown",e=>{
+    cancel();
+    sx=e.clientX;sy=e.clientY;
+    started=true;
+    t=setTimeout(()=>{ t=null; openEdit(d); },600);
+  });
+  el.addEventListener("pointermove",e=>{
+    if(started&&(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10))cancel();
+  });
+  el.addEventListener("pointerup",cancel);
+  el.addEventListener("pointercancel",cancel);
+  el.addEventListener("pointerleave",cancel);
+}
+
+/* ---------------- 编辑浮窗 ---------------- */
+const EDIT_FIELDS=[
+  ["药品归类","药品归类（如：化学药品 / 中成药）"],
+  ["药品剂型","药品剂型（如：胶囊剂 / 注射剂）"],
+  ["所属分类","所属分类"],
+  ["拼音","拼音（搜索用，空格分隔）"],
+  ["存放位置","存放位置 / 库位（卡片高亮展示）"],
+  ["存储条件","存储条件（如：冷藏 / 避光）"],
+  ["批准文号","批准文号"],
+  ["zsbsm","追溯码"]
+];
+let editingIdm=null;
+const editModal=$("editModal");
+function openEdit(d){
+  editingIdm=d.idm;
+  $("editTitle").textContent=`${d.ypmc||"—"}${d.ypgg?"　"+d.ypgg:""}`;
+  $("editSub").textContent=`厂家：${d.cjmc||"—"}　·　以下为可编辑字段（长按其它内容不可改）`;
+  const box=$("editFields");box.innerHTML="";
+  EDIT_FIELDS.forEach(([k,ph])=>{
+    const row=document.createElement("div");row.className="ef";
+    const lab=document.createElement("label");lab.className="efk";lab.textContent=ph;
+    const inp=document.createElement("input");
+    inp.value=d[k]==null?"":d[k];
+    inp.dataset.field=k;
+    row.appendChild(lab);row.appendChild(inp);
+    box.appendChild(row);
+  });
+  editModal.style.display="flex";
+  const first=box.querySelector("input");if(first)first.focus();
+}
+function closeEdit(){editModal.style.display="none";editingIdm=null;}
+function saveEdit(){
+  if(editingIdm==null)return;
+  const d=rawData.find(x=>x.idm===editingIdm);
+  if(d){
+    $("editFields").querySelectorAll("input").forEach(inp=>{
+      d[inp.dataset.field]=inp.value.trim();
+    });
+    saveDB(rawData);
+  }
+  closeEdit();
+  applyFilter();
+}
+$("btnEditSave").addEventListener("click",saveEdit);
+$("btnEditClose").addEventListener("click",closeEdit);
+$("btnEditCancel").addEventListener("click",closeEdit);
+editModal.addEventListener("click",e=>{if(e.target===editModal)closeEdit()});
 function row(k,v){return `<div class="row"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
