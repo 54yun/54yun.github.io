@@ -467,8 +467,19 @@ async function importFromUrl(url){
   if(!res.ok){ msg("❌ 请求失败：HTTP "+res.status,"err"); return; }
   const text=await res.text();
   msg("正在保存数据…","");
-  try{ await importData(text); }
-  catch(err){ msg("❌ 导入失败："+err.message,"err"); }
+  try{
+    const path=url.split("?")[0].split("#")[0].toLowerCase();
+    if(path.endsWith(".csv")){
+      await applyData(csvToDrugs(parseCsv(text)));
+    }else{
+      try{
+        await importData(text);
+      }catch(e){
+        msg("正在按 CSV 解析…","");
+        await applyData(csvToDrugs(parseCsv(text)));
+      }
+    }
+  }catch(err){ msg("❌ 导入失败："+err.message,"err"); }
 }
 $("btnImport").addEventListener("click",()=>{ msg("",""); const u=$("dataUrl").value.trim(); importFromUrl(u); });
 $("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"){ msg("",""); importFromUrl(e.target.value.trim()); } });
