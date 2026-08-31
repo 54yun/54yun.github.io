@@ -151,6 +151,8 @@
     font-size:14px;outline:none;transition:.18s;background:#fff;color:var(--text);
   }
   .edit-fields input:focus,.edit-fields select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,111,237,.15)}
+  .edit-fields input.bad,.edit-fields select.bad{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+  .ef-err{font-size:11.5px;color:#dc2626;line-height:1.3}
   .edit-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px 18px;border-top:1px solid var(--border)}
   .card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   @media(max-width:600px){
@@ -563,44 +565,104 @@ function bindLongPress(el,d){
   el.addEventListener("pointerleave",cancel);
 }
 
-/* ---------------- 编辑浮窗 ---------------- */
-const EDIT_FIELDS=[
-  ["药品归类","药品归类（如：化学药品 / 中成药）"],
-  ["药品剂型","药品剂型（如：胶囊剂 / 注射剂）"],
-  ["所属分类","所属分类"],
-  ["拼音","拼音（搜索用，空格分隔）"],
-  ["存放位置","存放位置 / 库位（卡片高亮展示）"],
-  ["存储条件","存储条件（如：冷藏 / 避光）"],
-  ["批准文号","批准文号"],
-  ["zsbsm","追溯码"]
-];
+/* ---------------- 编辑浮窗（按药典/法规限制） ---------------- */
+const CLASS_OPTIONS=["","西药","中成药","材料","类药品材料"].sort();
+const FORM_OPTIONS=["","丸剂","乳膏剂","其他","冻干粉针剂","凝胶剂","分散片","口服乳液","口服混悬剂","口服混悬液","口服溶液剂","合剂","含片","吸入制剂","咀嚼片","喷雾剂","外用混悬液","大蜜丸","控释片","散剂","材料","材料/器械","栓剂","橡胶膏剂","气雾剂","水丸","泡腾片","注射液","注射液/注射用","注射用无菌粉末","洗剂","浓缩丸","溶液剂","溶液剂/外用液体","滴丸","滴剂","滴眼剂","滴耳剂","滴鼻剂","灌肠剂","煎膏剂","片","片剂","眼膏","粉针剂","粉雾剂","糖浆剂","糖衣片","素片","缓释片","缓释胶囊","肠溶片","肠溶胶囊","胶囊剂","胶浆剂","膜剂","薄膜衣片","贴剂","软胶囊剂","软膏剂","雾化溶液剂","颗粒剂","饮片","饮片/中药材"].sort();
+const CATEGORY_OPTIONS=["","β-内酰胺类抗生素(头孢/青霉素/碳青霉烯)","中枢兴奋药/促智药(脑功能改善)","中药/中成药","产科/安胎用药","作用于末梢血管/脑血管的药物","促胃肠动力药","免疫抑制剂","其他/未分类","利尿药/脱水药","助消化药","医用气体","医用耗材/器械","升压药/拟肾上腺素药","升白细胞/血小板药","单抗及免疫抗肿瘤药","口腔科用药","喹诺酮类抗菌药","大环内酯及其他抗生素","妇科用药","导泻/通便药","局部麻醉药","平喘药","性激素及生殖/抗前列腺用药","抗凝血药","抗寄生虫药(驱虫/抗原虫)","抗帕金森病药","抗心律失常药/强心苷","抗心绞痛/血管扩张药(硝酸酯类等)","抗抑郁药","抗病毒药","抗痛风药","抗癫痫药/抗惊厥","抗真菌药","抗精神病药","抗结核药","抗肿瘤内分泌/激素治疗药","抗肿瘤药(化疗药)","抗血小板药","抗贫血药(补铁/VitB12/叶酸)","抗过敏药(抗组胺药)","抗酸药及抗溃疡药","抗风湿/改善病情药(DMARDs)","抗骨质疏松药/钙调节药","抗高血压药","止吐药","止泻/肠道微生态调节药","止血药","氨基糖苷类抗生素","消毒防腐药","溶栓药","甲状腺激素及抗甲状腺药","电解质/酸碱平衡调节药","皮肤科用药(外用)","眼科用药","磺胺类及其他抗菌药","神经肌肉阻滞/肌松药","糖类/能量及营养药","维生素及矿物质制剂","耳鼻喉科用药","肝胆疾病辅助用药","肾上腺皮质激素类","胰岛素及类似物","血液制品/血浆代用品","解毒药/吸附药","解热镇痛抗炎药(NSAIDs)","解痉药/抗胆碱药","调血脂药","造影剂/诊断用药","镇咳祛痰药","镇静催眠药/抗焦虑药","降血糖药","靶向抗肿瘤药(小分子激酶抑制剂)","麻醉药(全麻/麻醉辅助)"].sort();
+const STORAGE_OPTIONS=["","常温储存","阴凉储存(不超过20℃)","冷藏(2~8℃)","冷冻(-20℃以下)","避光储存","密封防潮","遮光密闭","置于干燥处"].sort();
+const DROPDOWN_FIELDS={"药品归类":CLASS_OPTIONS,"药品剂型":FORM_OPTIONS,"所属分类":CATEGORY_OPTIONS,"存储条件":STORAGE_OPTIONS};
+const EDIT_FIELDS=[["药品归类","药品归类（下拉选择）"],["药品剂型","药品剂型（下拉选择）"],["所属分类","所属分类（下拉选择）"],["拼音","拼音（搜索用）"],["存放位置","存放位置 / 库位"],["存储条件","存储条件（下拉选择）"],["批准文号","批准文号"],["zsbsm","追溯码"]];
+
+function validateField(k,v){
+  const val=String(v==null?"":v).trim();
+  switch(k){
+    case "药品归类": case "药品剂型": case "所属分类": case "存储条件":
+      if(!val)return "请选择"; 
+      const opts=DROPDOWN_FIELDS[k];
+      return opts.includes(val)?"":"不在规范取值内";
+    case "拼音":
+      return /^[a-zA-Z\s]+$/.test(val)?"":"拼音只能为英文字母和空格";
+    case "存放位置":
+      return /^[A-Za-z0-9\-_/ ]*$/.test(val)?"":"库位只能用字母、数字、横杠、下划线和斜杠";
+    case "批准文号":
+      return val===""||/^(国药准字|国药健字|国食健字|国械注准|国械备|国药典字)[A-Z0-9]+$/.test(val)?"":"批准文号格式不正确（如：国药准字H20123456）";
+    case "zsbsm":
+      return val===""||/^[0-9]{7,30}$/.test(val)?"":"追溯码需为7位以上纯数字";
+    default: return "";
+  }
+}
 let editingIdm=null;
 const editModal=$("editModal");
 function openEdit(d){
   editingIdm=d.idm;
   $("editTitle").textContent=`${d.ypmc||"—"}${d.ypgg?"　"+d.ypgg:""}`;
-  $("editSub").textContent=`厂家：${d.cjmc||"—"}　·　以下为可编辑字段（长按其它内容不可改）`;
+  $("editSub").textContent=`厂家：${d.cjmc||"—"}　·　以下可编辑字段已按药典/法规校验`;
   const box=$("editFields");box.innerHTML="";
   EDIT_FIELDS.forEach(([k,ph])=>{
     const row=document.createElement("div");row.className="ef";
     const lab=document.createElement("label");lab.className="efk";lab.textContent=ph;
-    const inp=document.createElement("input");
-    inp.value=d[k]==null?"":d[k];
-    inp.dataset.field=k;
-    row.appendChild(lab);row.appendChild(inp);
+    const err=document.createElement("div");err.className="ef-err";err.style.display="none";
+    const ctl=DOControl(k,d[k]==null?"":d[k]);
+    ctl.addEventListener("input",()=>onCtrlChange(k,ctl,err));
+    if(ctl.tagName==="SELECT")ctl.addEventListener("change",()=>onCtrlChange(k,ctl,err));
+    row.appendChild(lab);row.appendChild(ctl);row.appendChild(err);
     box.appendChild(row);
   });
   editModal.style.display="flex";
-  const first=box.querySelector("input");if(first)first.focus();
+  const first=box.querySelector("select,input");if(first)first.focus();
+}
+function DOControl(k,val){
+  const opts=DROPDOWN_FIELDS[k];
+  if(opts){
+    const sel=document.createElement("select");
+    sel.dataset.field=k;
+    opts.forEach(o=>{
+      const opt=document.createElement("option");
+      opt.value=o;opt.textContent=o||"（请选择）";
+      if(o===String(val))opt.selected=true;
+      sel.appendChild(opt);
+    });
+    return sel;
+  }
+  const inp=document.createElement("input");
+  inp.dataset.field=k;
+  inp.value=val;
+  if(k==="拼音")inp.placeholder="如：amxljn";
+  else if(k==="存放位置")inp.placeholder="如：A-01 / 冷藏柜";
+  else if(k==="批准文号")inp.placeholder="如：国药准字H20123456";
+  else if(k==="zsbsm")inp.placeholder="追溯码（7位以上数字）";
+  if(k==="拼音"||k==="存放位置"){
+    inp.addEventListener("input",()=>{inp.value=inp.value.replace(/[^\w\s/-]/g,"");});
+  }
+  return inp;
+}
+function onCtrlChange(k,ctl,err){
+  const msg=validateField(k,ctl.value);
+  if(msg){err.textContent="⚠ "+msg;err.style.display="block";ctl.classList.add("bad");}
+  else{err.style.display="none";ctl.classList.remove("bad");}
 }
 function closeEdit(){editModal.style.display="none";editingIdm=null;}
 function saveEdit(){
   if(editingIdm==null)return;
+  const box=$("editFields");
+  const ctrls=box.querySelectorAll("select,input");
+  let firstErr=false,kv={};
+  ctrls.forEach(ctl=>{
+    const k=ctl.dataset.field;
+    const v=ctl.value.trim();
+    kv[k]=v;
+    const msg=validateField(k,v);
+    if(msg){
+      const err=ctl.parentElement.querySelector(".ef-err");
+      if(err){err.textContent="⚠ "+msg;err.style.display="block";} 
+      ctl.classList.add("bad");
+      if(!firstErr){firstErr=true;ctl.focus();}
+    }
+  });
+  if(firstErr){alert("存在不合规字段，请修正后保存");return;}
   const d=rawData.find(x=>x.idm===editingIdm);
   if(d){
-    $("editFields").querySelectorAll("input").forEach(inp=>{
-      d[inp.dataset.field]=inp.value.trim();
-    });
+    Object.keys(kv).forEach(k=>{d[k]=kv[k];});
     saveDB(rawData);
   }
   closeEdit();
