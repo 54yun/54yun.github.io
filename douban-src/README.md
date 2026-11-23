@@ -18,6 +18,20 @@
 - `layouts/_default/single.html`:书页(`douban_medium == "book"`)加一行「电子版」微信读书搜索入口
 - `static/site.css`:上面那一行的样式(`.ebook-links`)
 
+## 本仓库的裁剪范围
+
+存进本站的只有 **书** 与 **影视** 两类作品。豆备导出的其余部分(广播、日记、
+评论、相册、小组、豆列)没有提交,`static/uploads/`(广播配图与日记插图)也一并删掉了,
+所以相对完整导出有三处是手工裁剪过的:
+
+- `content/` 只保留 `book/`、`movie/`、`search.md`,以及重写过的 `_index.md`
+  (首页只陈列书与影视两节);
+- `static/search-index.js` 由全量索引过滤为 `k == "book" || k == "movie"`,`content/search.md`
+  里的 `douban_count` 同步改成条目数;
+- `static/uploads/` 不再存在。
+
+重新导出时若想保持现状,记得同样处理,否则被删掉的栏目会随着 `rsync` 一起回来。
+
 ## 站点如何构建
 
 ```bash
