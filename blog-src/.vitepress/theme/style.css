@@ -47,27 +47,35 @@
   display: contents;
 }
 
-/* 存档首页/栏目页 */
+/* 存档首页:两个栏目卡片(整张可点) */
 .douban-scope .douban-lede {
-  color: var(--vp-c-text-2);
   margin: 1rem 0 2rem;
+  color: var(--vp-c-text-2);
 }
 
 .douban-scope .douban-cards {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   margin: 1.5rem 0;
 }
 
 .douban-scope .douban-card {
+  display: block;
+  padding: 1.25rem 1.4rem;
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
-  padding: 1.25rem 1.4rem;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+.douban-scope .douban-card:hover {
+  border-color: var(--vp-c-text-3);
 }
 
 .douban-scope .douban-card h2 {
-  margin: 0 0 0.85rem;
+  margin: 0;
   padding: 0;
   border: none;
   font-size: 1.05rem;
@@ -80,44 +88,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-.douban-scope .douban-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-}
-
-.douban-scope .douban-chip {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.3rem;
-  padding: 3px 12px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 999px;
-  color: var(--vp-c-text-2);
-  font-size: 13px;
-  text-decoration: none;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.douban-scope .douban-chip:hover {
-  border-color: var(--vp-c-text-3);
-  color: var(--vp-c-text-1);
-}
-
-.douban-scope .douban-chip b {
-  color: var(--vp-c-text-3);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
 .douban-scope .douban-summary {
   margin: 1rem 0 1.5rem;
   color: var(--vp-c-text-3);
   font-size: 14px;
 }
 
-/* 封面网格:等比封面 + 两行标题,不加阴影不加圆角戏法 */
+/* 封面网格:等比封面 + 两行标题 */
 .douban-scope .douban-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -139,20 +116,26 @@
   text-decoration: none;
 }
 
-.douban-scope .douban-grid img,
-.douban-scope .douban-grid .no-cover {
+.douban-scope .douban-grid .cover {
   display: block;
   width: 100%;
   aspect-ratio: 2 / 3;
-  object-fit: cover;
   margin-bottom: 0.5rem;
+  overflow: hidden;
   border: 1px solid var(--vp-c-divider);
   border-radius: 4px;
   background: var(--vp-c-bg-soft);
   transition: border-color 0.2s;
 }
 
-.douban-scope .douban-grid a:hover img {
+.douban-scope .douban-grid .cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.douban-scope .douban-grid a:hover .cover {
   border-color: var(--vp-c-text-3);
 }
 

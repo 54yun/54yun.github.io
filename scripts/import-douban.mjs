@@ -63,11 +63,6 @@ const MEDIA = [
   { key: 'book', name: '书', unit: '本' },
   { key: 'movie', name: '影视', unit: '部' },
 ]
-const STATUS = [
-  { key: 'wish', name: '想读', fallbackMovie: '想看' },
-  { key: 'doing', name: '在读', fallbackMovie: '在看' },
-  { key: 'done', name: '读过', fallbackMovie: '看过' },
-]
 
 function readMedium(medium) {
   const dir = path.join(contentDir, medium)
@@ -119,7 +114,6 @@ const rootSections = []
 
 for (const media of MEDIA) {
   const items = byMedium[media.key]
-  const base = `/${['douban', media.key].join('/')}`
 
   // 详情页:front matter 原样保留,正文开头插封面与书页的合法电子版入口
   for (const item of items) {
@@ -143,40 +137,15 @@ for (const media of MEDIA) {
     )
   }
 
-  // 状态页:豆备导出里只有 front matter,列表原本由 Hugo 模板算;
-  // 这里落成静态封面网格(相对链接,raw HTML 不会被 VitePress 补 base)
-  const statusLinks = []
-  for (const status of STATUS) {
-    const list = items.filter((item) => item.status === status.key)
-    if (list.length === 0) continue
-    const label = media.key === 'movie' ? status.fallbackMovie : status.name
-    statusLinks.push({ path: `${base}/${status.key}/`, label, count: list.length })
-
-    const cells = list
-      .map((item) => {
-        const cover = item.cover
-          ? `<img src="/douban/covers/${item.cover}" alt="" loading="lazy">`
-          : '<span class="no-cover"></span>'
-        return `  <li><a href="../../${media.key}/${item.id}">${cover}<span class="t">${item.title}</span></a></li>`
-      })
-      .join('\n')
-
-    writePage(
-      path.join(media.key, status.key, 'index.md'),
-      `---
-title: ${label}
----
-
-# ${label}
-
-<p class="douban-summary">共 ${list.length} ${media.unit}</p>
-
-<ul class="douban-grid">
-${cells}
-</ul>
-`,
-    )
-  }
+  // 栏目页:不再按想读/在读/读过分页,一个封面网格铺完(相对链接,raw HTML 不补 base)
+  const cells = items
+    .map((item) => {
+      const cover = item.cover
+        ? `<img src="/douban/covers/${item.cover}" alt="" loading="lazy">`
+        : '<span class="no-cover"></span>'
+      return `  <li><a href="${item.id}"><span class="cover">${cover}</span><span class="t">${item.title}</span></a></li>`
+    })
+    .join('\n')
 
   writePage(
     path.join(media.key, 'index.md'),
@@ -188,15 +157,13 @@ title: ${media.name}
 
 <p class="douban-summary">共 ${items.length} ${media.unit}</p>
 
-<p class="douban-chips">
-${statusLinks
-  .map((s) => `  <a class="douban-chip" href="${s.path.replace(base + '/', '')}">${s.label} <b>${s.count}</b></a>`)
-  .join('\n')}
-</p>
+<ul class="douban-grid">
+${cells}
+</ul>
 `,
   )
 
-  rootSections.push({ media, total: items.length, statusLinks })
+  rootSections.push({ media, total: items.length })
 }
 
 writePage(
@@ -212,14 +179,9 @@ title: 豆瓣存档
 <div class="douban-cards">
 ${rootSections
   .map(
-    ({ media, total, statusLinks }) => `  <section class="douban-card">
+    ({ media, total }) => `  <a class="douban-card" href="${media.key}/">
     <h2>${media.name} <b>${total}</b></h2>
-    <p class="douban-chips">
-${statusLinks
-  .map((s) => `      <a class="douban-chip" href="${s.path.replace('/douban/', '')}">${s.label} <b>${s.count}</b></a>`)
-  .join('\n')}
-    </p>
-  </section>`,
+  </a>`,
   )
   .join('\n')}
 </div>
