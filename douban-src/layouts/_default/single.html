@@ -29,6 +29,21 @@
     </div>
   </div>
 
+  {{ if eq .Params.douban_medium "book" }}
+    {{/* 书页多一条「电子版」入口：只有搜索链接，不存书源、不指向未授权站点。
+
+         关键词用书名，但要先去掉结尾的版本括注（「（第4版）」「(第20版)」）。
+         微信读书是按书名做字面匹配的：带上版本号常常直接 0 条，而书其实在库里
+         （库里叫「心理学与生活（第20版，中文版）」）。去掉之后同名书会一起出来，
+         按作者、出版社再挑，比搜不到强。 */}}
+    {{ $q := .Title }}
+    {{ $stripped := $q | replaceRE `\s*[（(][^）)]*[）)]\s*$` "" }}
+    {{ if $stripped }}{{ $q = $stripped }}{{ end }}
+    <p class="ebook-links">电子版：
+      <a href="https://weread.qq.com/web/search/books?keyword={{ $q | urlquery }}" rel="noreferrer noopener" target="_blank">微信读书</a>
+    </p>
+  {{ end }}
+
   {{ if .Params.douban_upstream_deleted }}
     {{/* **这一句是这个项目的卖点，不是错误提示。** 豆瓣把条目删了，而你的评分、
          标签、短评还在——它们是你自己写的，没跟着消失。 */}}

@@ -12,7 +12,11 @@
 
 主题取自 <https://github.com/Doubak/doubak-site-generator> 的 `theme/hugo/`
 (commit `d1f1632b545ee15c98128b8fcf334a49e9cdd1a9`, Apache-2.0)。
-本站相对上游只改了 `hugo.toml`:站点标题、页脚源码链接、以及给 `baseURL` 补充部署路径说明。
+本站相对上游的改动:
+
+- `hugo.toml`:站点标题、页脚源码链接、`baseURL` 的部署路径说明
+- `layouts/_default/single.html`:书页(`douban_medium == "book"`)加一行「电子版」微信读书搜索入口
+- `static/site.css`:上面那一行的样式(`.ebook-links`)
 
 ## 站点如何构建
 

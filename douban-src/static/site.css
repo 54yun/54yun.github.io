@@ -404,6 +404,10 @@ article { max-width: 46rem; }
 .meta-line { color: var(--text-dim); font-size: .9rem; margin: var(--s1) 0; }
 .aka { color: var(--text-dim); font-size: .9rem; margin: var(--s2) 0; }
 
+/* 书页的「电子版」入口：只是一个合法渠道的搜索链接，不存书源。 */
+.ebook-links { color: var(--text-dim); font-size: .9rem; margin: var(--s2) 0 var(--s4); }
+.ebook-links a { font-weight: 600; }
+
 blockquote {
   margin: var(--s4) 0; padding: var(--s3) var(--s4);
   background: var(--brand-soft); border-left: 3px solid var(--brand-bright);
