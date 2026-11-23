@@ -4,8 +4,10 @@ title: 书
 
 # 书
 
-共 55 本。
+<p class="douban-summary">共 55 本</p>
 
-- [想读 45](/douban/book/wish/)
-- [在读 7](/douban/book/doing/)
-- [读过 3](/douban/book/done/)
+<p class="douban-chips">
+  <a class="douban-chip" href="wish/">想读 <b>45</b></a>
+  <a class="douban-chip" href="doing/">在读 <b>7</b></a>
+  <a class="douban-chip" href="done/">读过 <b>3</b></a>
+</p>

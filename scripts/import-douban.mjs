@@ -121,12 +121,12 @@ for (const media of MEDIA) {
   const items = byMedium[media.key]
   const base = `/${['douban', media.key].join('/')}`
 
-  // 详情页:front matter 原样保留,正文开头插一张收敛的封面;书另加合法电子版入口
+  // 详情页:front matter 原样保留,正文开头插封面与书页的合法电子版入口
   for (const item of items) {
-    const parts = []
+    const parts = [`# ${item.title}`]
     if (item.cover) {
       parts.push(
-        `<img class="douban-cover" src="/douban/covers/${item.cover}" alt="${item.title}" width="120">\n`,
+        `<img class="douban-cover" src="/douban/covers/${item.cover}" alt="${item.title}" width="120">`,
       )
     }
     if (media.key === 'book') {
@@ -134,16 +134,17 @@ for (const media of MEDIA) {
       // 去掉后同名书会一起出来,按作者/出版社再挑。
       const keyword = item.title.replace(/\s*[（(][^）)]*[）)]\s*$/, '') || item.title
       const url = `https://weread.qq.com/web/search/books?keyword=${encodeURIComponent(keyword)}`
-      parts.push(`电子版:[微信读书](${url})\n`)
+      parts.push(`<p class="douban-ebook">电子版:<a href="${url}" target="_blank" rel="noreferrer">微信读书</a></p>`)
     }
     const body = item.body.replace(/\r\n/g, '\n')
     writePage(
       path.join(media.key, `${item.id}.md`),
-      item.head.replace(/\r\n/g, '\n') + parts.join('\n') + body,
+      item.head.replace(/\r\n/g, '\n') + parts.join('\n\n') + '\n' + body,
     )
   }
 
-  // 状态页:豆备导出里只有 front matter,列表由生成器算,这里在 Markdown 里落成静态列表
+  // 状态页:豆备导出里只有 front matter,列表原本由 Hugo 模板算;
+  // 这里落成静态封面网格(相对链接,raw HTML 不会被 VitePress 补 base)
   const statusLinks = []
   for (const status of STATUS) {
     const list = items.filter((item) => item.status === status.key)
@@ -151,12 +152,14 @@ for (const media of MEDIA) {
     const label = media.key === 'movie' ? status.fallbackMovie : status.name
     statusLinks.push({ path: `${base}/${status.key}/`, label, count: list.length })
 
-    const rows = list.map((item) => {
-      const cover = item.cover
-        ? `[![${item.title}](/douban/covers/${item.cover} "${item.title}")](${base}/${item.id})`
-        : ''
-      return `- ${cover} [${item.title}](${base}/${item.id})`
-    })
+    const cells = list
+      .map((item) => {
+        const cover = item.cover
+          ? `<img src="/douban/covers/${item.cover}" alt="" loading="lazy">`
+          : '<span class="no-cover"></span>'
+        return `  <li><a href="../../${media.key}/${item.id}">${cover}<span class="t">${item.title}</span></a></li>`
+      })
+      .join('\n')
 
     writePage(
       path.join(media.key, status.key, 'index.md'),
@@ -166,9 +169,11 @@ title: ${label}
 
 # ${label}
 
-共 ${list.length} ${media.unit}。
+<p class="douban-summary">共 ${list.length} ${media.unit}</p>
 
-${rows.join('\n')}
+<ul class="douban-grid">
+${cells}
+</ul>
 `,
     )
   }
@@ -181,9 +186,13 @@ title: ${media.name}
 
 # ${media.name}
 
-共 ${items.length} ${media.unit}。
+<p class="douban-summary">共 ${items.length} ${media.unit}</p>
 
-${statusLinks.map((s) => `- [${s.label} ${s.count}](${s.path})`).join('\n')}
+<p class="douban-chips">
+${statusLinks
+  .map((s) => `  <a class="douban-chip" href="${s.path.replace(base + '/', '')}">${s.label} <b>${s.count}</b></a>`)
+  .join('\n')}
+</p>
 `,
   )
 
@@ -198,15 +207,22 @@ title: 豆瓣存档
 
 # 豆瓣存档
 
-从本地档案生成的个人存档,与豆瓣网无关。只收录书与影视。
+<p class="douban-lede">从本地档案生成的个人存档,与豆瓣网无关。只收录书与影视。</p>
 
+<div class="douban-cards">
 ${rootSections
   .map(
-    ({ media, total, statusLinks }) => `## ${media.name} ${total}
-
-${statusLinks.map((s) => `- [${s.label} ${s.count}](${s.path})`).join('\n')}`,
+    ({ media, total, statusLinks }) => `  <section class="douban-card">
+    <h2>${media.name} <b>${total}</b></h2>
+    <p class="douban-chips">
+${statusLinks
+  .map((s) => `      <a class="douban-chip" href="${s.path.replace('/douban/', '')}">${s.label} <b>${s.count}</b></a>`)
+  .join('\n')}
+    </p>
+  </section>`,
   )
-  .join('\n\n')}
+  .join('\n')}
+</div>
 `,
 )
 

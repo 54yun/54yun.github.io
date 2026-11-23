@@ -4,50 +4,52 @@ title: 想读
 
 # 想读
 
-共 45 本。
+<p class="douban-summary">共 45 本</p>
 
-- [![贸易打造的世界（第4版）](/douban/covers/s34284285.jpg "贸易打造的世界（第4版）")](/douban/book/35899826) [贸易打造的世界（第4版）](/douban/book/35899826)
-- [![古德曼·吉尔曼治疗学的药理学基础](/douban/covers/s35516261.jpg "古德曼·吉尔曼治疗学的药理学基础")](/douban/book/38494843) [古德曼·吉尔曼治疗学的药理学基础](/douban/book/38494843)
-- [![关键期关键帮助](/douban/covers/s34861516.jpg "关键期关键帮助")](/douban/book/36876464) [关键期关键帮助](/douban/book/36876464)
-- [![概率论与数理统计](/douban/covers/s8899433.jpg "概率论与数理统计")](/douban/book/2201479) [概率论与数理统计](/douban/book/2201479)
-- [![工作、消费主义和新穷人](/douban/covers/s34993450.jpg "工作、消费主义和新穷人")](/douban/book/36519486) [工作、消费主义和新穷人](/douban/book/36519486)
-- [![中国历代政治得失](/douban/covers/s1319205.jpg "中国历代政治得失")](/douban/book/1003479) [中国历代政治得失](/douban/book/1003479)
-- [![最好的告别](/douban/covers/s28260907.jpg "最好的告别")](/douban/book/26576861) [最好的告别](/douban/book/26576861)
-- [![社会学](/douban/covers/s35341577.jpg "社会学")](/douban/book/37516391) [社会学](/douban/book/37516391)
-- [![区分](/douban/covers/s35526102.jpg "区分")](/douban/book/26354330) [区分](/douban/book/26354330)
-- [![區判](/douban/covers/s34544815.jpg "區判")](/douban/book/36317738) [區判](/douban/book/36317738)
-- [![硬科技浪潮](/douban/covers/s35548084.jpg "硬科技浪潮")](/douban/book/38536084) [硬科技浪潮](/douban/book/38536084)
-- [![原则](/douban/covers/s35253661.jpg "原则")](/douban/book/37235329) [原则](/douban/book/37235329)
-- [![缠斗](/douban/covers/s35455424.jpg "缠斗")](/douban/book/38409776) [缠斗](/douban/book/38409776)
-- [![围城](/douban/covers/s11276847.jpg "围城")](/douban/book/11524204) [围城](/douban/book/11524204)
-- [![工程控制论](/douban/covers/s5751442.jpg "工程控制论")](/douban/book/1967264) [工程控制论](/douban/book/1967264)
-- [![货币哲学](/douban/covers/s24438042.jpg "货币哲学")](/douban/book/3798518) [货币哲学](/douban/book/3798518)
-- [![博弈论](/douban/covers/s28715757.jpg "博弈论")](/douban/book/5346017) [博弈论](/douban/book/5346017)
-- [![技术革命与金融资本](/douban/covers/s2859031.jpg "技术革命与金融资本")](/douban/book/2326852) [技术革命与金融资本](/douban/book/2326852)
-- [![大国政治的悲剧](/douban/covers/s29459442.jpg "大国政治的悲剧")](/douban/book/25933193) [大国政治的悲剧](/douban/book/25933193)
-- [![演讲术·雄辩术·谈话术](/douban/covers/s29777749.jpg "演讲术·雄辩术·谈话术")](/douban/book/30232445) [演讲术·雄辩术·谈话术](/douban/book/30232445)
-- [![傲慢与偏见](/douban/covers/s34612982.jpg "傲慢与偏见")](/douban/book/36440631) [傲慢与偏见](/douban/book/36440631)
-- [![对赌（实践版）](/douban/covers/s35252061.jpg "对赌（实践版）")](/douban/book/35760971) [对赌（实践版）](/douban/book/35760971)
-- [![破界创生：从清华钱学森班到深圳零一学院的创生教育](/douban/covers/s35086620.jpg "破界创生：从清华钱学森班到深圳零一学院的创生教育")](/douban/book/37245172) [破界创生：从清华钱学森班到深圳零一学院的创生教育](/douban/book/37245172)
-- [![就业、利息和货币通论](/douban/covers/s2178957.jpg "就业、利息和货币通论")](/douban/book/1201122) [就业、利息和货币通论](/douban/book/1201122)
-- [![《就业、利息和货币通论》导读](/douban/covers/s35379501.jpg "《就业、利息和货币通论》导读")](/douban/book/30917220) [《就业、利息和货币通论》导读](/douban/book/30917220)
-- [![景观社会](/douban/covers/s29475985.jpg "景观社会")](/douban/book/26865819) [景观社会](/douban/book/26865819)
-- [![债](/douban/covers/s34220546.jpg "债")](/douban/book/34978654) [债](/douban/book/34978654)
-- [![文化人类学（第13版）](/douban/covers/s34080522.jpg "文化人类学（第13版）")](/douban/book/35694032) [文化人类学（第13版）](/douban/book/35694032)
-- [![交易心理分析](/douban/covers/s6298109.jpg "交易心理分析")](/douban/book/5976544) [交易心理分析](/douban/book/5976544)
-- [![谈美](/douban/covers/s35081715.jpg "谈美")](/douban/book/37235955) [谈美](/douban/book/37235955)
-- [![悉达多](/douban/covers/s5988254.jpg "悉达多")](/douban/book/3406401) [悉达多](/douban/book/3406401)
-- [![信息科学原理](/douban/covers/s1023880.jpg "信息科学原理")](/douban/book/1033072) [信息科学原理](/douban/book/1033072)
-- [![历史的巨镜](/douban/covers/s33756405.jpg "历史的巨镜")](/douban/book/26591910) [历史的巨镜](/douban/book/26591910)
-- [![人格心理学(第八版)](/douban/covers/s28028569.jpg "人格心理学(第八版)")](/douban/book/26004131) [人格心理学(第八版)](/douban/book/26004131)
-- [![突破天性](/douban/covers/s29869100.jpg "突破天性")](/douban/book/30325723) [突破天性](/douban/book/30325723)
-- [![心理类型](/douban/covers/s4142224.jpg "心理类型")](/douban/book/4216680) [心理类型](/douban/book/4216680)
-- [![重估一切价值](/douban/covers/s26039205.jpg "重估一切价值")](/douban/book/23020036) [重估一切价值](/douban/book/23020036)
-- [![西西弗神话](/douban/covers/s33556519.jpg "西西弗神话")](/douban/book/24257403) [西西弗神话](/douban/book/24257403)
-- [![史记（中华经典名著全本全注全译丛书-三全本·全十册）](/douban/covers/s34310721.jpg "史记（中华经典名著全本全注全译丛书-三全本·全十册）")](/douban/book/36094930) [史记（中华经典名著全本全注全译丛书-三全本·全十册）](/douban/book/36094930)
-- [![常识](/douban/covers/s28075635.jpg "常识")](/douban/book/26371591) [常识](/douban/book/26371591)
-- [![萧条中的生存智慧](/douban/covers/s33638130.jpg "萧条中的生存智慧")](/douban/book/35058176) [萧条中的生存智慧](/douban/book/35058176)
-- [![政治分肥](/douban/covers/s29600313.jpg "政治分肥")](/douban/book/26986713) [政治分肥](/douban/book/26986713)
-- [![思考，快与慢](/douban/covers/s10345719.jpg "思考，快与慢")](/douban/book/10785583) [思考，快与慢](/douban/book/10785583)
-- [![投资学](/douban/covers/s6031128.jpg "投资学")](/douban/book/3797002) [投资学](/douban/book/3797002)
-- [![翦商](/douban/covers/s34385069.jpg "翦商")](/douban/book/36096304) [翦商](/douban/book/36096304)
+<ul class="douban-grid">
+  <li><a href="../../book/35899826"><img src="/douban/covers/s34284285.jpg" alt="" loading="lazy"><span class="t">贸易打造的世界（第4版）</span></a></li>
+  <li><a href="../../book/38494843"><img src="/douban/covers/s35516261.jpg" alt="" loading="lazy"><span class="t">古德曼·吉尔曼治疗学的药理学基础</span></a></li>
+  <li><a href="../../book/36876464"><img src="/douban/covers/s34861516.jpg" alt="" loading="lazy"><span class="t">关键期关键帮助</span></a></li>
+  <li><a href="../../book/2201479"><img src="/douban/covers/s8899433.jpg" alt="" loading="lazy"><span class="t">概率论与数理统计</span></a></li>
+  <li><a href="../../book/36519486"><img src="/douban/covers/s34993450.jpg" alt="" loading="lazy"><span class="t">工作、消费主义和新穷人</span></a></li>
+  <li><a href="../../book/1003479"><img src="/douban/covers/s1319205.jpg" alt="" loading="lazy"><span class="t">中国历代政治得失</span></a></li>
+  <li><a href="../../book/26576861"><img src="/douban/covers/s28260907.jpg" alt="" loading="lazy"><span class="t">最好的告别</span></a></li>
+  <li><a href="../../book/37516391"><img src="/douban/covers/s35341577.jpg" alt="" loading="lazy"><span class="t">社会学</span></a></li>
+  <li><a href="../../book/26354330"><img src="/douban/covers/s35526102.jpg" alt="" loading="lazy"><span class="t">区分</span></a></li>
+  <li><a href="../../book/36317738"><img src="/douban/covers/s34544815.jpg" alt="" loading="lazy"><span class="t">區判</span></a></li>
+  <li><a href="../../book/38536084"><img src="/douban/covers/s35548084.jpg" alt="" loading="lazy"><span class="t">硬科技浪潮</span></a></li>
+  <li><a href="../../book/37235329"><img src="/douban/covers/s35253661.jpg" alt="" loading="lazy"><span class="t">原则</span></a></li>
+  <li><a href="../../book/38409776"><img src="/douban/covers/s35455424.jpg" alt="" loading="lazy"><span class="t">缠斗</span></a></li>
+  <li><a href="../../book/11524204"><img src="/douban/covers/s11276847.jpg" alt="" loading="lazy"><span class="t">围城</span></a></li>
+  <li><a href="../../book/1967264"><img src="/douban/covers/s5751442.jpg" alt="" loading="lazy"><span class="t">工程控制论</span></a></li>
+  <li><a href="../../book/3798518"><img src="/douban/covers/s24438042.jpg" alt="" loading="lazy"><span class="t">货币哲学</span></a></li>
+  <li><a href="../../book/5346017"><img src="/douban/covers/s28715757.jpg" alt="" loading="lazy"><span class="t">博弈论</span></a></li>
+  <li><a href="../../book/2326852"><img src="/douban/covers/s2859031.jpg" alt="" loading="lazy"><span class="t">技术革命与金融资本</span></a></li>
+  <li><a href="../../book/25933193"><img src="/douban/covers/s29459442.jpg" alt="" loading="lazy"><span class="t">大国政治的悲剧</span></a></li>
+  <li><a href="../../book/30232445"><img src="/douban/covers/s29777749.jpg" alt="" loading="lazy"><span class="t">演讲术·雄辩术·谈话术</span></a></li>
+  <li><a href="../../book/36440631"><img src="/douban/covers/s34612982.jpg" alt="" loading="lazy"><span class="t">傲慢与偏见</span></a></li>
+  <li><a href="../../book/35760971"><img src="/douban/covers/s35252061.jpg" alt="" loading="lazy"><span class="t">对赌（实践版）</span></a></li>
+  <li><a href="../../book/37245172"><img src="/douban/covers/s35086620.jpg" alt="" loading="lazy"><span class="t">破界创生：从清华钱学森班到深圳零一学院的创生教育</span></a></li>
+  <li><a href="../../book/1201122"><img src="/douban/covers/s2178957.jpg" alt="" loading="lazy"><span class="t">就业、利息和货币通论</span></a></li>
+  <li><a href="../../book/30917220"><img src="/douban/covers/s35379501.jpg" alt="" loading="lazy"><span class="t">《就业、利息和货币通论》导读</span></a></li>
+  <li><a href="../../book/26865819"><img src="/douban/covers/s29475985.jpg" alt="" loading="lazy"><span class="t">景观社会</span></a></li>
+  <li><a href="../../book/34978654"><img src="/douban/covers/s34220546.jpg" alt="" loading="lazy"><span class="t">债</span></a></li>
+  <li><a href="../../book/35694032"><img src="/douban/covers/s34080522.jpg" alt="" loading="lazy"><span class="t">文化人类学（第13版）</span></a></li>
+  <li><a href="../../book/5976544"><img src="/douban/covers/s6298109.jpg" alt="" loading="lazy"><span class="t">交易心理分析</span></a></li>
+  <li><a href="../../book/37235955"><img src="/douban/covers/s35081715.jpg" alt="" loading="lazy"><span class="t">谈美</span></a></li>
+  <li><a href="../../book/3406401"><img src="/douban/covers/s5988254.jpg" alt="" loading="lazy"><span class="t">悉达多</span></a></li>
+  <li><a href="../../book/1033072"><img src="/douban/covers/s1023880.jpg" alt="" loading="lazy"><span class="t">信息科学原理</span></a></li>
+  <li><a href="../../book/26591910"><img src="/douban/covers/s33756405.jpg" alt="" loading="lazy"><span class="t">历史的巨镜</span></a></li>
+  <li><a href="../../book/26004131"><img src="/douban/covers/s28028569.jpg" alt="" loading="lazy"><span class="t">人格心理学(第八版)</span></a></li>
+  <li><a href="../../book/30325723"><img src="/douban/covers/s29869100.jpg" alt="" loading="lazy"><span class="t">突破天性</span></a></li>
+  <li><a href="../../book/4216680"><img src="/douban/covers/s4142224.jpg" alt="" loading="lazy"><span class="t">心理类型</span></a></li>
+  <li><a href="../../book/23020036"><img src="/douban/covers/s26039205.jpg" alt="" loading="lazy"><span class="t">重估一切价值</span></a></li>
+  <li><a href="../../book/24257403"><img src="/douban/covers/s33556519.jpg" alt="" loading="lazy"><span class="t">西西弗神话</span></a></li>
+  <li><a href="../../book/36094930"><img src="/douban/covers/s34310721.jpg" alt="" loading="lazy"><span class="t">史记（中华经典名著全本全注全译丛书-三全本·全十册）</span></a></li>
+  <li><a href="../../book/26371591"><img src="/douban/covers/s28075635.jpg" alt="" loading="lazy"><span class="t">常识</span></a></li>
+  <li><a href="../../book/35058176"><img src="/douban/covers/s33638130.jpg" alt="" loading="lazy"><span class="t">萧条中的生存智慧</span></a></li>
+  <li><a href="../../book/26986713"><img src="/douban/covers/s29600313.jpg" alt="" loading="lazy"><span class="t">政治分肥</span></a></li>
+  <li><a href="../../book/10785583"><img src="/douban/covers/s10345719.jpg" alt="" loading="lazy"><span class="t">思考，快与慢</span></a></li>
+  <li><a href="../../book/3797002"><img src="/douban/covers/s6031128.jpg" alt="" loading="lazy"><span class="t">投资学</span></a></li>
+  <li><a href="../../book/36096304"><img src="/douban/covers/s34385069.jpg" alt="" loading="lazy"><span class="t">翦商</span></a></li>
+</ul>

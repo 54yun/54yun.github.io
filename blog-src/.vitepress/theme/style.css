@@ -39,27 +39,132 @@
 }
 
 /* ── 豆瓣存档 ──────────────────────────────────────────────────────
-   并进博客后不再带自己的样式表:配色、字体、导航、搜索全部走默认主题,
-   这里只处理两件默认主题没见过的事——封面缩略图与详情页封面。
+   并进博客后不再带自己的样式表:配色、字体、导航、搜索全部走默认主题。
+   这里只补默认主题没见过的三件事:栏目卡片、封面网格、作品信息表。
    作用域类由 theme/Layout.vue 按路由挂上。                                   */
 
 .douban-scope {
   display: contents;
 }
 
-/* 列表页:缩略图 + 标题,一条一行 */
-.douban-scope .vp-doc li {
-  margin: 6px 0;
+/* 存档首页/栏目页 */
+.douban-scope .douban-lede {
+  color: var(--vp-c-text-2);
+  margin: 1rem 0 2rem;
 }
 
-.douban-scope .vp-doc li img {
-  width: 48px;
-  height: 68px;
+.douban-scope .douban-cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin: 1.5rem 0;
+}
+
+.douban-scope .douban-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  padding: 1.25rem 1.4rem;
+}
+
+.douban-scope .douban-card h2 {
+  margin: 0 0 0.85rem;
+  padding: 0;
+  border: none;
+  font-size: 1.05rem;
+}
+
+.douban-scope .douban-card h2 b {
+  margin-left: 0.35rem;
+  color: var(--vp-c-text-3);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.douban-scope .douban-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.douban-scope .douban-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 3px 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 999px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.douban-scope .douban-chip:hover {
+  border-color: var(--vp-c-text-3);
+  color: var(--vp-c-text-1);
+}
+
+.douban-scope .douban-chip b {
+  color: var(--vp-c-text-3);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.douban-scope .douban-summary {
+  margin: 1rem 0 1.5rem;
+  color: var(--vp-c-text-3);
+  font-size: 14px;
+}
+
+/* 封面网格:等比封面 + 两行标题,不加阴影不加圆角戏法 */
+.douban-scope .douban-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 1.5rem 1.1rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.douban-scope .douban-grid li {
+  margin: 0;
+}
+
+.douban-scope .douban-grid a {
+  display: block;
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.douban-scope .douban-grid img,
+.douban-scope .douban-grid .no-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
-  border-radius: 2px;
-  vertical-align: middle;
-  margin-right: 0.5rem;
-  box-shadow: none;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+  background: var(--vp-c-bg-soft);
+  transition: border-color 0.2s;
+}
+
+.douban-scope .douban-grid a:hover img {
+  border-color: var(--vp-c-text-3);
+}
+
+.douban-scope .douban-grid a:hover .t {
+  color: var(--vp-c-text-1);
+}
+
+.douban-scope .douban-grid .t {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* 详情页:封面靠右,小图,不抢正文 */
@@ -68,12 +173,58 @@
   width: 120px;
   height: auto;
   margin: 0 0 1rem 1.25rem;
-  border-radius: 3px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 4px;
+}
+
+.douban-scope .douban-ebook {
+  margin: 0 0 1.5rem;
+  color: var(--vp-c-text-3);
+  font-size: 13px;
+}
+
+/* 作品信息:去掉空表头与竖线,只留细分割 */
+.douban-scope .vp-doc table {
+  display: table;
+  width: 100%;
+  font-size: 14px;
+}
+
+.douban-scope .vp-doc table thead {
+  display: none;
+}
+
+.douban-scope .vp-doc table tr {
+  border: none;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: transparent;
+}
+
+.douban-scope .vp-doc table tr:last-child {
+  border-bottom: none;
+}
+
+.douban-scope .vp-doc table td {
+  border: none;
+  padding: 0.55rem 0;
+  vertical-align: top;
+}
+
+.douban-scope .vp-doc table td:first-child {
+  width: 6rem;
+  padding-right: 1rem;
+  color: var(--vp-c-text-3);
+  white-space: nowrap;
 }
 
 @media (max-width: 640px) {
   .douban-scope .douban-cover {
     float: none;
     margin: 0 0 1rem;
+  }
+
+  .douban-scope .douban-grid {
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 1.25rem 0.9rem;
   }
 }

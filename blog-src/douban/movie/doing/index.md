@@ -4,8 +4,10 @@ title: 在看
 
 # 在看
 
-共 3 部。
+<p class="douban-summary">共 3 部</p>
 
-- [![雪中悍刀行](/douban/covers/p2714598385.jpg "雪中悍刀行")](/douban/movie/27034752) [雪中悍刀行](/douban/movie/27034752)
-- [![三体](/douban/covers/p2886492021.jpg "三体")](/douban/movie/26647087) [三体](/douban/movie/26647087)
-- [![狂飙](/douban/covers/p2886376181.jpg "狂飙")](/douban/movie/35465232) [狂飙](/douban/movie/35465232)
+<ul class="douban-grid">
+  <li><a href="../../movie/27034752"><img src="/douban/covers/p2714598385.jpg" alt="" loading="lazy"><span class="t">雪中悍刀行</span></a></li>
+  <li><a href="../../movie/26647087"><img src="/douban/covers/p2886492021.jpg" alt="" loading="lazy"><span class="t">三体</span></a></li>
+  <li><a href="../../movie/35465232"><img src="/douban/covers/p2886376181.jpg" alt="" loading="lazy"><span class="t">狂飙</span></a></li>
+</ul>
