@@ -6,6 +6,13 @@ Thumbs.db
 node_modules/
 blog/
 
+# 构建产物(豆瓣存档)与 Hugo 二进制缓存
+douban/
+.hugo/
+
+# 整站构建产物(scripts/build-site.sh)
+dist/
+
 # AI 协作说明(不提交)
 AGENTS.md
 
@@ -13,3 +20,6 @@ AGENTS.md
 .reasonix/
 reasonix.toml
 .wrangler/
+
+# Hugo 构建锁文件
+.hugo_build.lock

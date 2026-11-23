@@ -1,0 +1,13 @@
+{{- /* Resolve Markdown page links for both file:// and subpath baseURLs.
+      Stripping baseURL and emitting a site-root path lets Hugo's relativeURLs
+      relativize from each rendered output file (including paginated list views). */ -}}
+{{- $href := .Destination -}}
+{{- $url := urls.Parse .Destination -}}
+{{- if and (not $url.IsAbs) (strings.HasSuffix $url.Path ".md") -}}
+  {{- with .Page.GetPage $url.Path -}}
+    {{- $href = partial "local-url.html" .RelPermalink -}}
+    {{- with $url.RawQuery -}}{{- $href = printf "%s?%s" $href . -}}{{- end -}}
+    {{- with $url.Fragment -}}{{- $href = printf "%s#%s" $href . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+<a href="{{ $href | safeURL }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>{{- "" -}}

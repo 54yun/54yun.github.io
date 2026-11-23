@@ -1,0 +1,3 @@
+{{- /* Strip baseURL's deployment directory before Hugo relativizes root URLs. */ -}}
+{{- $base := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+{{- return (strings.TrimPrefix $base .) -}}

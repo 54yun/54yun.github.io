@@ -1,0 +1,22 @@
+{{- /*
+  按 hugo.toml 里的 `sectionOrder` 排小节，**名单之外的接在后面**，一个都不丢。
+  如果有类别为 0 个条目，就不显示那个 entry（过滤 len .RegularPages == 0）。
+
+  写死顺序而不丢东西，两件事都要：顺序是有意的（广播最不可替代，排第一），
+  而一张能让新小节悄悄从导航上消失的清单迟早会消失掉什么——那种失踪没有任何提示。
+*/ -}}
+{{- $want := .Site.Params.sectionorder | default slice -}}
+{{- $all := .Site.Sections.ByTitle -}}
+{{- $out := slice -}}
+{{- range $want -}}
+  {{- $name := . -}}
+  {{- range where $all "Section" $name -}}
+    {{- if gt (len .RegularPages) 0 -}}{{- $out = $out | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $all -}}
+  {{- if not (in $want .Section) -}}
+    {{- if gt (len .RegularPages) 0 -}}{{- $out = $out | append . -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

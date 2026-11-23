@@ -1,0 +1,39 @@
+{{/*
+  某个媒介的状态筛选条：全部 · 看过 · 想看 · 在看。
+
+  **每一片都是一个真实存在的页面的链接**，不是 JS 开关。前端过滤只能过滤当前
+  这一页——影视 2102 条、每页 48 条，「看过」会给出「这 48 条里的看过」，
+  那是个看起来在工作、其实在骗人的按钮。链接则能收藏、能分享、file:// 下能用、
+  不需要 JS，翻页也照常。
+
+  参数：
+    section  媒介那一节的 Page（movie / book / …）
+    current  当前状态；空字符串表示「全部」这一页
+
+  条数写在片上。数字来自各自那一页 front matter 里的 douban_count，而那是
+  生成时数出来的——**不是当前这一页里数的**，否则它会随翻页而变，
+  而一个会变的计数比没有计数更糟：它看起来是个事实。
+*/}}
+{{ $current := .current }}
+{{ $section := .section }}
+{{ $filters := where $section.Sections "Params.douban_kind" "eq" "mark-filter" }}
+{{ if $filters }}
+  <nav class="chips" aria-label="按状态筛选">
+    <a class="chip{{ if not $current }} chip-on{{ end }}"
+       href="{{ partial "local-url.html" $section.RelPermalink }}"
+       {{ if not $current }}aria-current="page"{{ end }}>全部
+      <b>{{ len $section.RegularPages }}</b></a>
+    {{/* **想看 → 在看 → 看过**，跟着事情本身的次序走，与首页一致。
+         字母序（`doing/done/wish`）读出来是「在看、看过、想看」——那是把内部标识
+         的排序当成了人的顺序。两处顺序不一样比顺序不对更难发现。 */}}
+    {{ range $s := slice "wish" "doing" "done" }}
+      {{ range where $filters "Params.douban_status" "eq" $s }}
+        {{ $on := eq $current $s }}
+        <a class="chip{{ if $on }} chip-on{{ end }}"
+           href="{{ partial "local-url.html" .RelPermalink }}"
+           {{ if $on }}aria-current="page"{{ end }}>{{ .Params.douban_verb }}
+          <b>{{ .Params.douban_count }}</b></a>
+      {{ end }}
+    {{ end }}
+  </nav>
+{{ end }}

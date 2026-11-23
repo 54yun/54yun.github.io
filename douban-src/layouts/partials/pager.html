@@ -1,0 +1,27 @@
+{{/*
+  翻页条。
+
+  **首末页也要给出可点的页码**，而不是只有「上一页 / 下一页」——广播有三十几页，
+  只靠相邻翻是走不到底的。中间给一段窗口，两头各留一个，超出的收成省略号。
+*/}}
+{{ if gt .TotalPages 1 }}
+  <nav class="pager" aria-label="翻页">
+    {{ if .HasPrev }}<a href="{{ partial "local-url.html" .Prev.URL }}" rel="prev">← 上一页</a>{{ end }}
+
+    {{ $cur := .PageNumber }}
+    {{ range .Pagers }}
+      {{ $n := .PageNumber }}
+      {{ if or (le $n 1) (ge $n $.TotalPages) (and (ge $n (sub $cur 2)) (le $n (add $cur 2))) }}
+        {{ if eq $n $cur }}
+          <strong aria-current="page">{{ $n }}</strong>
+        {{ else }}
+          <a href="{{ partial "local-url.html" .URL }}">{{ $n }}</a>
+        {{ end }}
+      {{ else if or (eq $n (sub $cur 3)) (eq $n (add $cur 3)) }}
+        <span class="gap">…</span>
+      {{ end }}
+    {{ end }}
+
+    {{ if .HasNext }}<a href="{{ partial "local-url.html" .Next.URL }}" rel="next">下一页 →</a>{{ end }}
+  </nav>
+{{ end }}

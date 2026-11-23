@@ -1,0 +1,6 @@
+{{ $result := dict }}
+{{ with try (partial "avatar-icons.html" .) }}
+  {{ with .Err }}{{ warnf "头像无法解码，保留文字站名：%s" . }}
+  {{ else }}{{ $result = .Value }}{{ end }}
+{{ end }}
+{{ return $result }}

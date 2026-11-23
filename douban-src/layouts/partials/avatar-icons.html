@@ -1,0 +1,45 @@
+{{/* 本地栅格图解码失败由调用方 try 捕获；不访问任何远端 URL。 */}}
+{{ $result := dict }}
+{{ $baseURL := .Site.BaseURL }}
+{{ if os.FileExists "site-profile.json" }}
+  {{ $profile := os.ReadFile "site-profile.json" | transform.Unmarshal }}
+  {{ if and (eq $profile.status "ok") (findRE `^assets/profile/[1-9][0-9]*/[a-f0-9]{64}\.(png|jpg|gif|webp)$` ($profile.avatar | default "")) }}
+    {{ with resources.Get $profile.avatar }}
+      {{ $source := .Process "png" }}
+      {{ $variants := dict
+        "icon16" (dict "size" 16 "badge" 8 "inset" 0)
+        "icon" (dict "size" 32 "badge" 12 "inset" 1)
+        "touch" (dict "size" 180 "badge" 36 "inset" 12)
+        "header" (dict "size" 96 "badge" 0 "inset" 0)
+      }}
+      {{ range $name, $variant := $variants }}
+        {{ $size := $variant.size }}
+        {{ $image := $source }}
+        {{ if eq $name "touch" }}
+          {{/* 主屏图标铺满方形画布，允许放大与居中裁切；不添加边框或底色。 */}}
+          {{ $image = $image.Fill (printf "%dx%d center png" $size $size) }}
+        {{ else }}
+          {{ if or (gt $image.Width $size) (gt $image.Height $size) }}
+            {{ $image = $image.Fit (printf "%dx%d png" $size $size) }}
+          {{ end }}
+          {{ $left := int (math.Floor (div (sub $size $image.Width) 2.0)) }}
+          {{ $top := int (math.Floor (div (sub $size $image.Height) 2.0)) }}
+          {{ $right := sub (sub $size $image.Width) $left }}
+          {{ $bottom := sub (sub $size $image.Height) $top }}
+          {{ $image = $image.Filter (images.Process "png #00000000") (images.Padding $top $right $bottom $left "#00000000") }}
+        {{ end }}
+        {{ if gt $variant.badge 0 }}
+          {{/* 原图不变；按显示尺寸取角标，PNG alpha 参与合成，不铺白底。 */}}
+          {{ $badgeSize := $variant.badge }}
+          {{ $badge := resources.Get (printf "branding/doubak-badge-%d.png" $badgeSize) }}
+          {{ $at := sub (sub $size $badgeSize) $variant.inset }}
+          {{ $image = $image.Filter (images.Overlay $badge $at $at) }}
+        {{ end }}
+        {{/* Root-relative input lets relativeURLs handle both file:// and subpath hosting. */}}
+        {{ $local := printf "/%s" (strings.TrimPrefix $baseURL $image.Permalink) }}
+        {{ $result = merge $result (dict $name $local) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $result }}

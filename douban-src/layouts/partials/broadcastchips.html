@@ -1,0 +1,26 @@
+{{/*
+  广播的回复筛选条：全部 · 有回复。
+
+  与 partials/statuschips.html 遵循同一原则：每一片都是真实页面的链接
+  （broadcast/ 与 broadcast/replied/），不依赖前端 JS，支持 file://、
+  收藏分享，且翻页时计数恒定（全部条数从各月总和算得，有回复条数取自筛选页 front matter）。
+*/}}
+{{ $current := .current }}
+{{ $section := .section }}
+{{ $total := .total | default 0 }}
+{{ $filters := where $section.Sections "Params.douban_kind" "eq" "broadcast-filter" }}
+{{ if $filters }}
+  <nav class="chips" aria-label="按回复筛选">
+    <a class="chip{{ if not $current }} chip-on{{ end }}"
+       href="{{ partial "local-url.html" $section.RelPermalink }}"
+       {{ if not $current }}aria-current="page"{{ end }}>全部
+      <b>{{ $total }}</b></a>
+    {{ range where $filters "Params.douban_filter" "eq" "replied" }}
+      {{ $on := eq $current "replied" }}
+      <a class="chip{{ if $on }} chip-on{{ end }}"
+         href="{{ partial "local-url.html" .RelPermalink }}"
+         {{ if $on }}aria-current="page"{{ end }}>{{ .Title }}
+        <b>{{ .Params.douban_count }}</b></a>
+    {{ end }}
+  </nav>
+{{ end }}

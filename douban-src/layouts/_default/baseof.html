@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{ $names := .Site.Params.mediumnames }}
+{{ $name := .Title }}
+{{ if .IsSection }}{{ $name = index $names .Section | default .Title }}{{ end }}
+{{/* 标签页的标题要**稳定**：Hugo 自己取的那个随页面遍历顺序变。见 partials/termname.html。 */}}
+{{ if eq .Kind "term" }}{{ $name = partial "termname.html" . }}{{ end }}
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ $name }} · {{ .Site.Title }}{{ end }}</title>
+{{/*
+  样式在 static/site.css，不再内联。理由与扩展那边收敛前一样：内联的话，
+  改一个间距要翻模板，而每加一块界面就现编一套。
+
+  **一个外部请求都不发**：这份备份存在的理由是不再需要豆瓣还活着才能看，
+  那它自己也不该需要某个 CDN 还活着才好看。字体用系统栈。
+*/}}
+{{ $avatar := partialCached "avatar.html" . }}
+{{ with $avatar.icon16 }}<link rel="icon" type="image/png" sizes="16x16" href="{{ . }}">{{ end }}
+{{ with $avatar.icon }}<link rel="icon" type="image/png" sizes="32x32" href="{{ . }}">{{ end }}
+{{ with $avatar.touch }}<link rel="apple-touch-icon" sizes="180x180" href="{{ . }}">{{ end }}
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+
+<header class="site"><div class="wrap">
+  {{/*
+    **首页上，页眉这句站名本身就是那个 `<h1>`。**
+
+    原来是页眉一个链接、正文再来一个 `<h1>`，同一句话在页面上出现两次；把正文那个
+    藏起来（`.sr-only`）只是让眼睛看不见，屏幕阅读器仍然连着念两遍「我的豆瓣存档」。
+    而干脆删掉又会让首页一个 h1 都没有——那对屏幕阅读器与外部检索都是残的，
+    而检索正是这份存档将来被人找到的方式。
+
+    一个元素同时干两件事就没有这个矛盾：首页上它是 h1，其余页面上它只是回首页的
+    链接（那些页面各自有自己的 h1）。看上去一模一样，样式在 `.home` 上，不在标签上。
+  */}}
+  {{ if .IsHome }}
+    <h1 class="home{{ if $avatar.header }} has-avatar{{ end }}"><a href="{{ partial "local-url.html" .Site.Home.RelPermalink }}">{{ with $avatar.header }}<img class="account-avatar" src="{{ . }}" width="40" height="40" alt="">{{ end }}{{ .Site.Title }}</a></h1>
+  {{ else }}
+    <a class="home{{ if $avatar.header }} has-avatar{{ end }}" href="{{ partial "local-url.html" .Site.Home.RelPermalink }}">{{ with $avatar.header }}<img class="account-avatar" src="{{ . }}" width="40" height="40" alt="">{{ end }}{{ .Site.Title }}</a>
+  {{ end }}
+  <nav>
+    {{ range partial "sections.html" . }}
+      <a href="{{ partial "local-url.html" .RelPermalink }}"{{ if eq $.Section .Section }} aria-current="page"{{ end }}>{{ index $names .Section | default .Title }}</a>
+    {{ end }}
+    {{ with .Site.GetPage "/search" }}<a href="{{ partial "local-url.html" .RelPermalink }}">搜索</a>{{ end }}
+  </nav>
+</div></header>
+
+{{/*
+  小节名挂到 <main> 上，样式表才有办法「只在广播页」生效。
+
+  这不是装饰：广播的附图与日记正文里的插图在 Markdown 里长得一模一样
+  （都是自成一段的 `![](path)`），而它们该有的大小正相反——日记的插图是文章的
+  一部分，要看得清；广播的附图是一次发九张、十八张的随手拍，铺满屏就没法读了。
+  Markdown 分不出来，也不该分——**版式是主题的事**，那就在主题这一侧分。
+*/}}
+<main class="section-{{ .Section | default "home" }}"><div class="wrap">
+{{ block "main" . }}{{ end }}
+</div></main>
+
+<footer class="site"><div class="wrap">
+  {{/*
+    **这一句不能删。** 配色像豆瓣是有意的（这是你自己的豆瓣存档），但长得像
+    和冒充是两回事，而这一句就是两者之间的线。
+  */}}
+  {{/*
+    「豆备」这三个字指的是**这个工具本身**，所以链到产品页 doubak.com，
+    而不是代码仓库——一个刚看到这份存档、想知道「这是什么、我也能做一个吗」
+    的人，要的是产品页；只有想读代码的人才需要 GitHub，那条单独给。
+  */}}
+  由 <a href="https://doubak.com" rel="noreferrer noopener">豆备 (Doubak)</a> 从本地档案生成 ——
+  这是一份个人存档，与豆瓣网无关。<br>
+  整个过程零网络请求，这个页面也不发一个外部请求。
+  <a href="https://github.com/Doubak/doubak-site-generator" rel="noreferrer noopener">源码</a>
+  {{/*
+    上面那个「源码」是**生成器**的仓库，对谁都成立。这一个是**这一份站点自己**的
+    仓库，每个人各不相同，所以只有传了 `--source-repo` 才出现——默认一个字都不出。
+
+    默认绝不能是我们那个样张仓库：那样别人的站点页脚会挂上一个不属于他的仓库，
+    而那条链接看着挺正常，点进去才知道不是自己的。
+  */}}
+  {{- with .Site.Params.sourceRepo }} ·
+  <a href="{{ . }}" rel="noreferrer noopener">这个站点的源码</a>
+  {{- end }}
+  {{/*
+    「这一份掺了豆瓣上不公开的东西」。
+
+    **一份掺了私密内容的站点，看起来和一份没掺的一模一样**——分辨不出来正是它危险的
+    地方。生成时命令行里那句提示只有跑命令的人看得见一次，而这个站点会被别人打开、
+    会被收录、几个月后连作者自己都不记得是怎么生成的。所以这句话跟着页面走。
+
+    只有传了 `--include-private` 才出现，默认一个字都不出——一句永远在的提示等于
+    没人看的提示。
+  */}}
+  {{- if .Site.Params.includePrivate }}
+  <p class="private-note">🔒 这一份存档是带 <code>--include-private</code>
+  生成的：豆瓣上<b>不公开</b>的日记、豆列与广播也在里面，页面上带一枚锁标。</p>
+  {{- end }}
+</div></footer>
+
+</body>
+</html>
