@@ -37,3 +37,43 @@
   --vp-c-brand-2: #e4ecfa;
   --vp-c-brand-3: #e4ecfa;
 }
+
+/* ── 豆瓣存档 ──────────────────────────────────────────────────────
+   并进博客后不再带自己的样式表:配色、字体、导航、搜索全部走默认主题,
+   这里只处理两件默认主题没见过的事——封面缩略图与详情页封面。
+   作用域类由 theme/Layout.vue 按路由挂上。                                   */
+
+.douban-scope {
+  display: contents;
+}
+
+/* 列表页:缩略图 + 标题,一条一行 */
+.douban-scope .vp-doc li {
+  margin: 6px 0;
+}
+
+.douban-scope .vp-doc li img {
+  width: 48px;
+  height: 68px;
+  object-fit: cover;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  box-shadow: none;
+}
+
+/* 详情页:封面靠右,小图,不抢正文 */
+.douban-scope .douban-cover {
+  float: right;
+  width: 120px;
+  height: auto;
+  margin: 0 0 1rem 1.25rem;
+  border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+  .douban-scope .douban-cover {
+    float: none;
+    margin: 0 0 1rem;
+  }
+}

@@ -8,4 +8,22 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   outDir: '../blog',
+  themeConfig: {
+    nav: [
+      { text: '首页', link: '/' },
+      { text: '豆瓣存档', link: '/douban/' },
+    ],
+    // 离线本地搜索:175 条书/影视 + 博客文章都在索引里,不发任何外部请求
+    search: {
+      provider: 'local',
+    },
+    outline: {
+      level: [2, 3],
+      label: '本页目录',
+    },
+    docFooter: {
+      prev: '上一篇',
+      next: '下一篇',
+    },
+  },
 })
