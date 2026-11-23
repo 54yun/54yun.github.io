@@ -6,10 +6,7 @@ export default defineConfig({
   description: '暴风城茶馆的个人博客',
   base: '/blog/',
   cleanUrls: true,
-  lastUpdated: {
-    text: '最后更新于',
-    formatOptions: { dateStyle: 'medium', timeStyle: 'short' },
-  },
+  lastUpdated: true,
   outDir: '../blog',
   themeConfig: {
     nav: [
@@ -27,6 +24,10 @@ export default defineConfig({
     docFooter: {
       prev: '上一篇',
       next: '下一篇',
+    },
+    lastUpdated: {
+      text: '最后更新于',
+      formatOptions: { dateStyle: 'medium', timeStyle: 'short' },
     },
   },
 })
