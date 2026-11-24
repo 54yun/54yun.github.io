@@ -12,19 +12,19 @@
     @media (max-width: 767px) { .bookmarks { margin-top: 50px; } }
     .bookmarks h1 { margin-bottom: 10px; }
     .bookmarks .back { font-size: 14px; margin-bottom: 40px; display: inline-block; }
-    .bookmarks .back a { color: #999; text-decoration: none; border-bottom: 1px dotted #999; }
-    .bookmarks .back a:hover { border-bottom-style: solid; }
+    .bookmarks .back a { color: #999; text-decoration: underline dotted; text-decoration-color: #999; text-underline-offset: 2px; }
+    .bookmarks .back a:hover { text-decoration-style: solid; }
     .bookmarks .section { margin-bottom: 30px; text-align: left; }
     .bookmarks .section-title { font-size: 13px; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
     .bookmarks .bookmark-list { list-style: none; }
     .bookmarks .bookmark-list li { margin: 8px 0; }
-    .bookmarks .bookmark-list a { color: #333; text-decoration: none; border-bottom: 1px dotted #ccc; transition: all .3s ease; }
-    .bookmarks .bookmark-list a:hover { border-bottom-style: solid; }
+    .bookmarks .bookmark-list a { color: #333; text-decoration: underline dotted; text-decoration-color: #ccc; text-underline-offset: 2px; transition: color .3s ease, text-decoration-color .3s ease; }
+    .bookmarks .bookmark-list a:hover { text-decoration-style: solid; }
     .bookmarks .bookmark-list .desc { color: #999; font-size: 13px; margin-left: 8px; }
     @media (prefers-color-scheme: dark) {
       .bookmarks .section-title { color: #6C7486; }
-      .bookmarks .bookmark-list a { color: #99A3BA; border-bottom-color: #3F4656; }
-      .bookmarks .bookmark-list a:hover { color: #E4ECFA; border-bottom-color: #99A3BA; }
+      .bookmarks .bookmark-list a { color: #99A3BA; text-decoration-color: #3F4656; }
+      .bookmarks .bookmark-list a:hover { color: #E4ECFA; text-decoration-color: #99A3BA; }
       .bookmarks .bookmark-list .desc { color: #6C7486; }
     }
   </style>

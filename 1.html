@@ -482,7 +482,7 @@ async function importFromUrl(url){
   }catch(err){ msg("❌ 导入失败："+err.message,"err"); }
 }
 $("btnImport").addEventListener("click",()=>{ msg("",""); const u=$("dataUrl").value.trim(); importFromUrl(u); });
-$("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"){ msg("",""); importFromUrl(e.target.value.trim()); } });
+$("dataUrl").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.isComposing&&e.keyCode!==229){ msg("",""); importFromUrl(e.target.value.trim()); } });
 $("btnLocal").addEventListener("click",e=>{ e.preventDefault(); msg("",""); $("file").click(); });
 $("file").addEventListener("change",e=>{handleFile(e.target.files[0]);e.target.value=""});
 
@@ -529,7 +529,7 @@ let visible=0;
 
 /* ---------------- 渲染 ---------------- */
 function render(list){
-  const g=$("grid");g.innerHTML="";
+  const g=$("grid");g.replaceChildren();
   $("empty").style.display=list.length?"none":"block";
   const frag=document.createDocumentFragment();
   list.slice(0,visible).forEach(d=>frag.appendChild(card(d)));
@@ -608,7 +608,7 @@ function openEdit(d){
   editingIdm=d.idm;
   $("editTitle").textContent=`${d.ypmc||"—"}${d.ypgg?"　"+d.ypgg:""}`;
   $("editSub").textContent=`厂家：${d.cjmc||"—"}　·　以下可编辑字段已按药典/法规校验`;
-  const box=$("editFields");box.innerHTML="";
+  const box=$("editFields");box.replaceChildren();
   EDIT_FIELDS.forEach(([k,ph])=>{
     const row=document.createElement("div");row.className="ef";
     const lab=document.createElement("label");lab.className="efk";lab.textContent=ph;
@@ -750,7 +750,7 @@ async function stopH5Q(){
     try{await q.stop();}catch(e){}
     try{q.clear();}catch(e){}
   }
-  const c=$("h5q");c.style.display="none";c.innerHTML="";
+  const c=$("h5q");c.style.display="none";c.replaceChildren();
   cam.style.display="";
 }
 function stopNativeStream(){
@@ -871,7 +871,7 @@ function openScan(){
 function closeScan(){
   stopCamera();
   scanModal.style.display="none";
-  const c=$("h5q");c.style.display="none";c.innerHTML="";
+  const c=$("h5q");c.style.display="none";c.replaceChildren();
   cam.style.display="";
 }
 $("btnScan").addEventListener("click",openScan);
