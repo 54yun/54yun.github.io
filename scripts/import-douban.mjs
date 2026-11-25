@@ -14,6 +14,11 @@
  *
  * 只保留书与影视两类,广播/日记/评论/相册/小组/豆列一律跳过。
  * 数据本身(mm/dd 文件)是工具生成的,不要在 blog-src 里手改,重新导出后重跑本脚本。
+ *
+ * 手工补充(导出里没有、但想放进存档的条目)放 douban-extra/:
+ *   douban-extra/book/<豆瓣id>.md   front matter 与导出一致,多写一行 source: manual
+ *   douban-extra/covers/<封面文件>  与 front matter 的 douban_cover 对应
+ * 重跑本脚本不会清掉它们;同 id 与导出重复时以导出为准。
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -31,6 +36,8 @@ const contentDir = path.join(srcDir, 'content')
 const coversDir = path.join(srcDir, 'static', 'covers')
 const pagesDir = path.join(repoRoot, 'blog-src', 'douban')
 const publicCovers = path.join(repoRoot, 'blog-src', 'public', 'douban', 'covers')
+const extraDir = path.join(repoRoot, 'douban-extra')
+const extraCoversDir = path.join(extraDir, 'covers')
 
 for (const dir of [contentDir, coversDir]) {
   if (!fs.existsSync(dir)) {
@@ -85,6 +92,7 @@ function readMedium(medium) {
     const { head, data, body } = parseFrontMatter(text)
     if (medium === 'book' && EXCLUDED_BOOK_IDS.has(id)) continue
     const coverFile = data.douban_cover ? path.basename(data.douban_cover) : null
+    const coverSrc = coverFile ? path.join(coversDir, coverFile) : null
     items.push({
       id,
       title: data.title || id,
@@ -93,11 +101,37 @@ function readMedium(medium) {
       date: data.date || '',
       head,
       body,
-      cover: coverFile && fs.existsSync(path.join(coversDir, coverFile)) ? coverFile : null,
+      cover: coverFile && coverSrc && fs.existsSync(coverSrc) ? coverFile : null,
+      coverSrc,
     })
   }
   // 新的在前;没有日期的排最后
   items.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+  return items
+}
+
+/* 手工补充的条目:豆备导出之外的书/影视,放在 douban-extra/ 下 */
+function readExtras(medium) {
+  const dir = path.join(extraDir, medium)
+  if (!fs.existsSync(dir)) return []
+  const items = []
+  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md'))) {
+    const id = file.replace(/\.md$/, '')
+    if (medium === 'book' && EXCLUDED_BOOK_IDS.has(id)) continue
+    const { head, data, body } = parseFrontMatter(fs.readFileSync(path.join(dir, file), 'utf8'))
+    const coverFile = data.douban_cover ? path.basename(data.douban_cover) : null
+    const coverSrc = coverFile ? path.join(extraCoversDir, coverFile) : null
+    items.push({
+      id,
+      title: data.title || id,
+      date: data.date || '',
+      head,
+      body,
+      manual: true,
+      cover: coverFile && coverSrc && fs.existsSync(coverSrc) ? coverFile : null,
+      coverSrc,
+    })
+  }
   return items
 }
 
@@ -115,12 +149,27 @@ fs.mkdirSync(publicCovers, { recursive: true })
 const usedCovers = new Set()
 
 const byMedium = {}
+const coverSource = new Map()
 for (const media of MEDIA) {
-  byMedium[media.key] = readMedium(media.key)
-  for (const item of byMedium[media.key]) if (item.cover) usedCovers.add(item.cover)
+  const items = readMedium(media.key)
+  const seen = new Set(items.map((item) => item.id))
+  for (const extra of readExtras(media.key)) {
+    if (seen.has(extra.id)) {
+      console.warn(`douban-extra: ${media.key}/${extra.id} 与导出条目重复,已跳过`)
+      continue
+    }
+    items.push(extra)
+  }
+  items.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+  byMedium[media.key] = items
+  for (const item of items) {
+    if (!item.cover) continue
+    usedCovers.add(item.cover)
+    if (item.coverSrc) coverSource.set(item.cover, item.coverSrc)
+  }
 }
 for (const cover of usedCovers) {
-  fs.copyFileSync(path.join(coversDir, cover), path.join(publicCovers, cover))
+  fs.copyFileSync(coverSource.get(cover), path.join(publicCovers, cover))
 }
 
 const rootSections = []
@@ -135,6 +184,9 @@ for (const media of MEDIA) {
       parts.push(
         `<img class="douban-cover" src="/douban/covers/${item.cover}" alt="${item.title}" width="120">`,
       )
+    }
+    if (item.manual) {
+      parts.push('<p class="douban-ebook">手工补充,非豆瓣导出记录</p>')
     }
     if (media.key === 'book') {
       // 关键词去掉结尾版本括注:「心理学与生活 (第20版)」按字面搜是 0 条,

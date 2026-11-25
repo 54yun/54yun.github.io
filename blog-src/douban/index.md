@@ -8,7 +8,7 @@ title: 豆瓣存档
 
 <div class="douban-cards">
   <a class="douban-card" href="book/">
-    <h2>书 <b>51</b></h2>
+    <h2>书 <b>52</b></h2>
   </a>
   <a class="douban-card" href="movie/">
     <h2>影视 <b>120</b></h2>
