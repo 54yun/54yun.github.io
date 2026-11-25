@@ -4,7 +4,7 @@ title: 书
 
 # 书
 
-<p class="douban-summary">共 55 本</p>
+<p class="douban-summary">共 51 本</p>
 
 <ul class="douban-grid">
   <li><a href="35899826"><span class="cover"><img src="/douban/covers/s34284285.jpg" alt="" loading="lazy"></span><span class="t">贸易打造的世界（第4版）</span></a></li>
@@ -12,7 +12,6 @@ title: 书
   <li><a href="36876464"><span class="cover"><img src="/douban/covers/s34861516.jpg" alt="" loading="lazy"></span><span class="t">关键期关键帮助</span></a></li>
   <li><a href="2201479"><span class="cover"><img src="/douban/covers/s8899433.jpg" alt="" loading="lazy"></span><span class="t">概率论与数理统计</span></a></li>
   <li><a href="36519486"><span class="cover"><img src="/douban/covers/s34993450.jpg" alt="" loading="lazy"></span><span class="t">工作、消费主义和新穷人</span></a></li>
-  <li><a href="1003479"><span class="cover"><img src="/douban/covers/s1319205.jpg" alt="" loading="lazy"></span><span class="t">中国历代政治得失</span></a></li>
   <li><a href="26576861"><span class="cover"><img src="/douban/covers/s28260907.jpg" alt="" loading="lazy"></span><span class="t">最好的告别</span></a></li>
   <li><a href="37516391"><span class="cover"><img src="/douban/covers/s35341577.jpg" alt="" loading="lazy"></span><span class="t">社会学</span></a></li>
   <li><a href="26354330"><span class="cover"><img src="/douban/covers/s35526102.jpg" alt="" loading="lazy"></span><span class="t">区分</span></a></li>
@@ -26,7 +25,6 @@ title: 书
   <li><a href="3798518"><span class="cover"><img src="/douban/covers/s24438042.jpg" alt="" loading="lazy"></span><span class="t">货币哲学</span></a></li>
   <li><a href="5346017"><span class="cover"><img src="/douban/covers/s28715757.jpg" alt="" loading="lazy"></span><span class="t">博弈论</span></a></li>
   <li><a href="2326852"><span class="cover"><img src="/douban/covers/s2859031.jpg" alt="" loading="lazy"></span><span class="t">技术革命与金融资本</span></a></li>
-  <li><a href="25933193"><span class="cover"><img src="/douban/covers/s29459442.jpg" alt="" loading="lazy"></span><span class="t">大国政治的悲剧</span></a></li>
   <li><a href="30232445"><span class="cover"><img src="/douban/covers/s29777749.jpg" alt="" loading="lazy"></span><span class="t">演讲术·雄辩术·谈话术</span></a></li>
   <li><a href="36440631"><span class="cover"><img src="/douban/covers/s34612982.jpg" alt="" loading="lazy"></span><span class="t">傲慢与偏见</span></a></li>
   <li><a href="35760971"><span class="cover"><img src="/douban/covers/s35252061.jpg" alt="" loading="lazy"></span><span class="t">对赌（实践版）</span></a></li>
@@ -52,9 +50,7 @@ title: 书
   <li><a href="23020036"><span class="cover"><img src="/douban/covers/s26039205.jpg" alt="" loading="lazy"></span><span class="t">重估一切价值</span></a></li>
   <li><a href="24257403"><span class="cover"><img src="/douban/covers/s33556519.jpg" alt="" loading="lazy"></span><span class="t">西西弗神话</span></a></li>
   <li><a href="36094930"><span class="cover"><img src="/douban/covers/s34310721.jpg" alt="" loading="lazy"></span><span class="t">史记（中华经典名著全本全注全译丛书-三全本·全十册）</span></a></li>
-  <li><a href="26371591"><span class="cover"><img src="/douban/covers/s28075635.jpg" alt="" loading="lazy"></span><span class="t">常识</span></a></li>
   <li><a href="35058176"><span class="cover"><img src="/douban/covers/s33638130.jpg" alt="" loading="lazy"></span><span class="t">萧条中的生存智慧</span></a></li>
-  <li><a href="26986713"><span class="cover"><img src="/douban/covers/s29600313.jpg" alt="" loading="lazy"></span><span class="t">政治分肥</span></a></li>
   <li><a href="10785583"><span class="cover"><img src="/douban/covers/s10345719.jpg" alt="" loading="lazy"></span><span class="t">思考，快与慢</span></a></li>
   <li><a href="26701753"><span class="cover"><img src="/douban/covers/s28904737.jpg" alt="" loading="lazy"></span><span class="t">心理学与生活 (第19版)</span></a></li>
   <li><a href="3797002"><span class="cover"><img src="/douban/covers/s6031128.jpg" alt="" loading="lazy"></span><span class="t">投资学</span></a></li>

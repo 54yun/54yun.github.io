@@ -59,6 +59,18 @@ function parseFrontMatter(text) {
   return { head: m[0], data, body: text.slice(m[0].length) }
 }
 
+/*
+ * 内容排除名单(按豆瓣条目 id)。
+ * 主题上的取舍不交给脚本判断,这里只留一份显式清单:重新导出后也不会回来。
+ * 想恢复某本,删掉对应行重跑即可。
+ */
+const EXCLUDED_BOOK_IDS = new Set([
+  '1003479', // 中国历代政治得失
+  '25933193', // 大国政治的悲剧
+  '26986713', // 政治分肥
+  '26371591', // 常识(托马斯·潘恩)
+])
+
 const MEDIA = [
   { key: 'book', name: '书', unit: '本' },
   { key: 'movie', name: '影视', unit: '部' },
@@ -71,6 +83,7 @@ function readMedium(medium) {
     const id = file.replace(/\.md$/, '')
     const text = fs.readFileSync(path.join(dir, file), 'utf8')
     const { head, data, body } = parseFrontMatter(text)
+    if (medium === 'book' && EXCLUDED_BOOK_IDS.has(id)) continue
     const coverFile = data.douban_cover ? path.basename(data.douban_cover) : null
     items.push({
       id,
